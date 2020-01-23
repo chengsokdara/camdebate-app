@@ -1,4 +1,4 @@
-package com.camdebateapp;
+package org.camdebate.app;
 
 import com.facebook.react.ReactActivity;
 

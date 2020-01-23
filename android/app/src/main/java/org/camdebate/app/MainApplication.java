@@ -1,4 +1,4 @@
-package com.camdebateapp;
+package org.camdebate.app;
 
 import android.app.Application;
 import android.content.Context;
