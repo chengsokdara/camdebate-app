@@ -1,0 +1,6 @@
+export const bgColor = '#f5f5f5'
+export const darkColor = '#bdbdbd'
+export const lightColor = '#f2f2f2'
+export const lightPrimaryColor = '#4acafe'
+export const primaryColor = '#0193CE'
+export const darkPrimaryColor = '#00587b'
