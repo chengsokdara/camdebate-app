@@ -5,7 +5,15 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { createStackNavigator } from 'react-navigation-stack'
 
 import { Drawer, NavIcon } from '../components'
-import { lightPrimaryColor, primaryColor } from '../resources'
+import {
+  AppDrawerRouteName,
+  AppRouteName,
+  AuthDrawerRouteName,
+  AuthRouteName,
+  MainRouteName,
+  lightPrimaryColor,
+  primaryColor
+} from '../resources'
 import ContactScreen from './Contact'
 import FaqScreen from './Faq'
 import ForgotPasswordScreen from './Forgot'
@@ -23,15 +31,6 @@ import SignupScreen from './Signup'
 import TermScreen from './Term'
 import TestScreen from './Test'
 //import WelcomeScreen from './Welcome'
-
-/**
- * Default Routes
- */
-const MainRouteName = 'Auth' // options: App | Auth | AuthLoading | Test
-const AuthRouteName = 'Signup'
-const AuthDrawerRouteName = 'News'
-const AppRouteName = 'News'
-const AppDrawerRouteName = 'News'
 
 const NotificationNavigator = createStackNavigator(
   {
