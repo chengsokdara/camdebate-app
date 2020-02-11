@@ -10,23 +10,23 @@ export const CountryItems = [
   },
   {
     label: 'Cambodia',
-    value: 'cambodia'
+    value: 'Cambodia'
   },
   {
-    label: 'Thailand',
-    value: 'thailand'
+    label: 'Australia',
+    value: 'Australia'
   },
   {
-    label: 'Vietnam',
-    value: 'vietnam'
+    label: 'New Zealand',
+    value: 'New Zealand'
   },
   {
-    label: 'Lao',
-    value: 'lao'
+    label: 'United Kingdom',
+    value: 'United Kingdon'
   },
   {
-    label: 'Malaysia',
-    value: 'malaysia'
+    label: 'United States',
+    value: 'United States'
   }
 ]
 
@@ -37,11 +37,11 @@ export const GenderItems = [
   },
   {
     label: 'Male',
-    value: 'male'
+    value: 'Male'
   },
   {
     label: 'Female',
-    value: 'female'
+    value: 'Female'
   }
 ]
 
@@ -52,15 +52,23 @@ export const NationalityItems = [
   },
   {
     label: 'Cambodian',
-    value: 'cambodian'
+    value: 'Cambodian'
   },
   {
-    label: 'Thai',
-    value: 'thai'
+    label: 'Australia',
+    value: 'Australian'
   },
   {
-    label: 'Vietnamese',
-    value: 'vietnamese'
+    label: 'New Zealander',
+    value: 'New Zealander'
+  },
+  {
+    label: 'British',
+    value: 'British'
+  },
+  {
+    label: 'American',
+    value: 'American'
   }
 ]
 
@@ -70,8 +78,16 @@ export const TitleItems = [
     value: ''
   },
   {
-    label: 'Mr',
-    value: 'mr'
+    label: 'Dr',
+    value: 'Dr'
   },
-  { label: 'Ms', value: 'ms' }
+  {
+    label: 'Mr',
+    value: 'Mr'
+  },
+  { label: 'Ms', value: 'Ms' },
+  {
+    label: 'Prof',
+    value: 'Prof'
+  }
 ]

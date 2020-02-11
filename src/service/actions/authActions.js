@@ -5,13 +5,14 @@ export const setAuth = newState => ({
   newState
 })
 
-export const login = () => ({
-  type: AUTH_LOGIN
+export const login = token => ({
+  type: AUTH_LOGIN,
+  token
 })
 
-export const loginAsync = () => {
+export const loginAsync = token => {
   return (dispatch, getState) => {
-    dispatch(login())
+    dispatch(login(token))
     return getState().auth.token
   }
 }

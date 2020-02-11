@@ -1,16 +1,19 @@
 import React from 'react'
 import styled from 'styled-components/native'
 //import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Linking } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Caption, Card as PaperCard, TextInput } from 'react-native-paper'
 
 import { AppBar, DatePicker, Picker, Radio } from '../../components'
 import { primaryColor, NationalityItems, TitleItems } from '../../resources'
 import { GenderItems, MockRegistration } from '../../resources/mocks'
+import useRegister from './hook'
 
 const RegisterScreen = ({ navigation }) => {
+  const [] = useRegister()
   const { content, link, notice, title } = MockRegistration
+
   return (
     <Container>
       <AppBar

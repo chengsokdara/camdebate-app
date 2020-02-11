@@ -29,11 +29,12 @@ const Picker = ({
       value: 'taiw'
     }
   ],
+  value,
   onChangeValue,
   ...rest
 }) => {
   const inputRef = useRef()
-  const [inputText, setInputText] = useState('')
+  const [inputText, setInputText] = useState(value)
   const [visible, setVisible] = useState(false)
 
   console.log('inputText', inputText)
@@ -75,8 +76,8 @@ const Picker = ({
         </ButtonIcon>
       </ContainerInput>
       <Modal
-        animationType="fade"
         transparent
+        animationType="fade"
         visible={visible}
         onRequestClose={_toggleMenu}>
         <Overlay activeOpacity={1} onPress={_toggleMenu}>

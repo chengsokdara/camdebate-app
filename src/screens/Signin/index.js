@@ -31,7 +31,6 @@ const SigninScreen = ({ navigation }) => {
               mode="outlined"
             />
             <TextInput
-              autoComp
               autoCompleteType="password"
               label="Password"
               mode="outlined"

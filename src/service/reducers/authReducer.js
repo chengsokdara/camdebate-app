@@ -14,7 +14,7 @@ export default (state = INITIAL_STATE, action) => {
     case AUTH_LOGIN:
       return {
         ...state,
-        token: 'test'
+        token: action.token
       }
     case AUTH_LOGOUT:
       return {

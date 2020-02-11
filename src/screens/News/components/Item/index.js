@@ -9,7 +9,6 @@ import {
   List,
   TouchableRipple
 } from 'react-native-paper'
-import { WebView } from 'react-native-webview'
 
 import { formatString } from '../../../../service'
 
@@ -61,9 +60,7 @@ const NewsFeedItem = ({ item }) => {
   )
 }
 
-const Card = styled(PaperCard)`
-  margin: 5px;
-`
+const Card = styled(PaperCard)``
 
 const CardContent = styled(PaperCard.Content)`
   padding: 0;
@@ -77,6 +74,7 @@ const CardTitle = styled(PaperCard.Title)`
 
 const Container = styled(TouchableRipple)`
   border-radius: 10px;
+  margin: 5px;
 `
 
 const ListContainer = styled.View`
