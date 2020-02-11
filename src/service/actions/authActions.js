@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage'
 import { AUTH_LOGIN, AUTH_LOGOUT, SET_AUTH } from './types'
 
 export const setAuth = newState => ({
@@ -11,7 +12,8 @@ export const login = token => ({
 })
 
 export const loginAsync = token => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
+    await AsyncStorage.setItem('token', token)
     dispatch(login(token))
     return getState().auth.token
   }
@@ -22,7 +24,8 @@ export const logout = () => ({
 })
 
 export const logoutAsync = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
+    await AsyncStorage.removeItem('token')
     dispatch(logout())
     return getState().auth.token
   }

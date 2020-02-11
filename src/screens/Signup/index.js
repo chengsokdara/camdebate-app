@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components/native'
-import { useDispatch, useSelector, shadowEqual } from 'react-redux'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Button, Card as PaperCard, TextInput } from 'react-native-paper'
@@ -14,7 +14,7 @@ import {
 } from '../../resources/mocks'
 import { loginAsync, signupInputChange } from '../../service'
 
-const INITIAL_STATE = {
+const INITIAL_LOCAL_STATE = {
   Email: undefined,
   FamilyName: undefined,
   GivenName: undefined,
@@ -22,22 +22,28 @@ const INITIAL_STATE = {
   Phone: undefined
 }
 
+const TEST_REGISTER_DATA = {
+  Country: 'Cambodia',
+  Email: 'chengsokdara@gmail.com',
+  FamilyName: 'Cheng',
+  GivenName: 'Sokdara',
+  Nationality: 'Cambodian',
+  Password: 'scTNE.20',
+  Phone: '086558716',
+  Title: 'Mr'
+}
+
 const SignupScreen = ({ navigation }) => {
   const dispatch = useDispatch()
-  const globalState = useSelector(state => state.signup, shadowEqual)
-  const [localState, setLocalState] = useState(INITIAL_STATE)
+  const globalState = useSelector(state => state.signup, shallowEqual)
+  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE)
   const [register, { data }] = useMutation(RegisterMutation)
 
   const { Country, Nationality, Title } = globalState
   const { Email, FamilyName, GivenName, Password, Phone } = localState
-  console.log(
-    'RegisterScreen data',
-    data,
-    'globalState',
-    globalState,
-    'localState',
-    localState
-  )
+  console.log('SignupScreen data', data)
+  console.log('SignupScreen globalState', globalState)
+  console.log('SignupScreen localState', localState)
 
   const handleTextChange = type => newValue => {
     setLocalState({
@@ -65,19 +71,26 @@ const SignupScreen = ({ navigation }) => {
         }
       }
     })
+    /*
+    register({
+      variables: {
+        input: TEST_REGISTER_DATA
+      }
+    })
+    */
   }
 
   useEffect(() => {
-    if (data) {
-      const { code, token } = data
-      if (code === 200) {
-        dispatch(loginAsync(token)).then(token => {
-          console.log('after register', token)
-          navigation.navigate('App')
-        })
-      }
-
-      console.log('Registered data', data)
+    if (
+      data &&
+      data.register &&
+      data.register.token &&
+      data.register.code === 200
+    ) {
+      dispatch(loginAsync(data.register.token)).then(token => {
+        console.log('SignupScreen logged in', token)
+        if (token) navigation.navigate('App')
+      })
     }
   }, [data])
 

@@ -12,7 +12,7 @@ import {
 
 import { formatString } from '../../../../service'
 
-const NewsFeedItem = ({ item }) => {
+const FeedItem = ({ item }) => {
   const { ListData, ListTitle, Message, SubTitle, TableData, Title } = item
   //console.log('NewsFeedItem', item)
 
@@ -151,7 +151,7 @@ const SectionTitle = styled.Text`
   margin-bottom: 10px;
 `
 
-export default NewsFeedItem
+export default FeedItem
 
 /*
 <Scroll contentContainerStyle={{ flexGrow: 1, padding: 10 }}>

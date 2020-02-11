@@ -13,14 +13,14 @@ const Radio = ({
   textColor,
   value,
   style,
-  onChange,
+  onChangeValue,
   ...rest
 }) => {
-  const [innerValue, setInnerValue] = useState(value)
+  const [innerValue, setInnerValue] = useState()
 
   const handleValueChanged = newValue => {
     setInnerValue(newValue)
-    onChange && onChange(newValue)
+    onChangeValue && onChangeValue(newValue)
   }
 
   return (
@@ -28,7 +28,7 @@ const Radio = ({
       {label ? <Label>{label}</Label> : null}
       <RadioButton.Group
         style={{ flex: 0 }}
-        value={innerValue}
+        value={innerValue ? innerValue : value}
         onValueChange={handleValueChanged}>
         <Content orientation={orientation}>
           {items.map((item, index) => (

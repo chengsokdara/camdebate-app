@@ -7,14 +7,22 @@ import { primaryColor } from '../../../resources'
 
 const DatePicker = ({
   label = 'Date of Birth',
+  placeholder = 'Select your date of birth',
+  value,
   onChangeValue,
   style,
   ...rest
 }) => {
   const dateRef = useRef()
-  const [dateText, setDateText] = useState('2000-01-01')
+  const [dateText, setDateText] = useState()
 
   const _openDatePicker = () => dateRef.current.onPressDate()
+
+  const handleValueChange = date => {
+    console.log('date', date)
+    setDateText(date)
+    onChangeValue && onChangeValue(date)
+  }
 
   return (
     <>
@@ -30,20 +38,21 @@ const DatePicker = ({
         ]}>
         <RNDatePicker
           ref={dateRef}
-          style={{
-            width: '100%',
-            height: 56,
-            marginTop: 8
-          }}
-          date={dateText}
+          {...rest}
+          date={dateText ? dateText : value}
           mode="date"
-          placeholder="select date"
+          placeholder={placeholder}
           format="YYYY-MM-DD"
           minDate="1900-01-01"
           maxDate="2100-01-01"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           showIcon={false}
+          style={{
+            width: '100%',
+            height: 56,
+            marginTop: 8
+          }}
           customStyles={{
             dateInput: {
               height: 57,
@@ -53,14 +62,12 @@ const DatePicker = ({
               alignItems: 'flex-start'
             },
             dateText: {
-              color: '#757575',
+              color: dateText ? 'black' : '#757575',
               fontSize: 16
             }
             // ... You can check the source to find the other keys.
           }}
-          onDateChange={date => {
-            setDateText(date)
-          }}
+          onDateChange={handleValueChange}
         />
         <Label>{label}</Label>
         <ChevronDownIcon

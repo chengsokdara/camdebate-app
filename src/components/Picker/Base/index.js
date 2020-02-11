@@ -34,17 +34,15 @@ const Picker = ({
   ...rest
 }) => {
   const inputRef = useRef()
-  const [inputText, setInputText] = useState(value)
+  const [inputText, setInputText] = useState()
   const [visible, setVisible] = useState(false)
-
-  console.log('inputText', inputText)
 
   const _toggleMenu = () => setVisible(!visible)
 
   const _closeMenu = (label, value) => {
     onChangeValue && onChangeValue(value)
     console.log('label', label)
-    setInputText(label)
+    setInputText(label ? label : undefined)
     setVisible(false)
   }
 
@@ -64,7 +62,7 @@ const Picker = ({
           editable={false}
           label="Select country"
           mode="outlined"
-          value={inputText}
+          value={inputText ? inputText : value}
           onChangeText={text => {
             setVisible(true)
             setInputText(text)

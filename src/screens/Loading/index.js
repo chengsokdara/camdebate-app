@@ -3,10 +3,10 @@ import styled from 'styled-components/native'
 import { ActivityIndicator } from 'react-native-paper'
 import { bgColor, primaryColor } from '../../resources'
 
-import useLoadingHook from './hook'
+import useLoading from './hook'
 
 const LoadingScreen = ({ navigation }) => {
-  useLoadingHook(navigation)
+  useLoading(navigation)
   return (
     <Container bgColor={bgColor}>
       <Logo source={require('../../resources/images/camdebate_logo.png')} />

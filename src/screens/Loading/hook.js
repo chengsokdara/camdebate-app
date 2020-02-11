@@ -1,22 +1,26 @@
 import { useEffect } from 'react'
-import { useSelector, shallowEqual } from 'react-redux'
-//import { AsyncStorage } from 'react-native'
+import { useDispatch } from 'react-redux'
+import AsyncStorage from '@react-native-community/async-storage'
 
-const useLoadingHook = navigation => {
-  const { token } = useSelector(state => state.auth, shallowEqual)
+import { loginAsync } from '../../service'
+
+const useLoading = navigation => {
+  const dispatch = useDispatch()
 
   const _bootstrapAsync = async () => {
-    //const token = await AsyncStorage.getItem('token')
+    const token = await AsyncStorage.getItem('token')
+    console.log('_bootstrapAsync token', token)
+    if (token) await dispatch(loginAsync(token))
     navigation.navigate(token ? 'App' : 'Auth')
   }
 
   useEffect(() => {
     console.log('Loading rendered.')
-    const timeoutId = setTimeout(_bootstrapAsync, 3000)
+    const timeoutId = setTimeout(_bootstrapAsync, 0)
     return () => clearTimeout(timeoutId)
   }, [])
 
   return null
 }
 
-export default useLoadingHook
+export default useLoading

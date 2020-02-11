@@ -13,7 +13,8 @@ const Drawer = props => {
   const { token } = useSelector(state => state.auth, shallowEqual)
 
   const handleLogoutPress = async () => {
-    const logoutToken = dispatch(logoutAsync())
+    const logoutToken = await dispatch(logoutAsync())
+    console.log('Logged out token', token)
     if (!logoutToken) navigation.navigate('AuthLoading')
   }
 

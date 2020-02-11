@@ -7,13 +7,15 @@ export const ContactFragment = gql`
     message
     contact {
       ContactID
-      Phone
       Title
       GivenName
       FamilyName
+      Sex
       Nationality
-      Country
+      DOB
+      Phone
       Email
+      WorkPlace
     }
   }
 `
@@ -25,13 +27,15 @@ export const ContactsFragment = gql`
     message
     contacts {
       ContactID
-      Phone
       Title
       GivenName
       FamilyName
+      Sex
       Nationality
-      Country
+      DOB
+      Phone
       Email
+      WorkPlace
     }
   }
 `

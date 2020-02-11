@@ -1,17 +1,18 @@
 import React from 'react'
 import styled from 'styled-components/native'
 import { useQuery } from '@apollo/react-hooks'
-import { FlatList, Linking } from 'react-native'
+import { FlatList } from 'react-native'
 import { useSelector, shallowEqual } from 'react-redux'
 
 //import { MockNews } from '../../resources/mocks'
 import { FeedsQuery } from '../../resources/queries'
 import { AppBar } from '../../components'
-import { NewsFeedItem } from './components'
+import { FeedItem } from './components'
 
-const NewsScreen = ({ navigation }) => {
+const FeedScreen = ({ navigation }) => {
   const { loading, error, data, refetch } = useQuery(FeedsQuery)
   const { token } = useSelector(state => state.auth, shallowEqual)
+  console.log('FeedScreen token', token)
 
   if (loading) console.log('GraphQL loading...')
   if (error) console.log('GaphQL error!', error)
@@ -31,7 +32,7 @@ const NewsScreen = ({ navigation }) => {
       <FlatList
         refreshing={loading}
         data={sortedData}
-        renderItem={({ item }) => <NewsFeedItem item={item} />}
+        renderItem={({ item }) => <FeedItem item={item} />}
         ItemSeparatorComponent={() => <Separator />}
         keyExtractor={item => `${item.FeedID}`}
         contentContainerStyle={{
@@ -52,4 +53,4 @@ const Separator = styled.View`
   height: 5px;
 `
 
-export default NewsScreen
+export default FeedScreen

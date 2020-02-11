@@ -19,7 +19,7 @@ import FaqScreen from './Faq'
 import ForgotPasswordScreen from './Forgot'
 import LoadingScreen from './Loading'
 import MainScreen from './Main'
-import NewsScreen from './News'
+import FeedScreen from './Feed'
 import NotificationScreen from './Notification'
 import NotificationDetailScreen from './Notification/detail'
 import ProfileScreen from './Profile'
@@ -52,8 +52,8 @@ const BottomNavigator = createMaterialBottomTabNavigator(
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
       }
     },
-    News: {
-      screen: NewsScreen,
+    Feed: {
+      screen: FeedScreen,
       navigationOptions: {
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="home" />
       }
@@ -97,7 +97,7 @@ const BottomNavigator = createMaterialBottomTabNavigator(
 
 const DrawerNavigator = createDrawerNavigator(
   {
-    News: BottomNavigator,
+    Feed: BottomNavigator,
     Notification: NotificationNavigator,
     Setting: SettingScreen,
     Contact: ContactScreen,
@@ -141,8 +141,8 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
       }
     },
-    News: {
-      screen: NewsScreen,
+    Feed: {
+      screen: FeedScreen,
       navigationOptions: {
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="school" />
       }
@@ -175,7 +175,7 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
 
 const AuthDrawerNavigator = createDrawerNavigator(
   {
-    News: AuthBottomNavigator,
+    Feed: AuthBottomNavigator,
     Contact: ContactScreen,
     Faq: FaqScreen,
     Term: TermScreen
