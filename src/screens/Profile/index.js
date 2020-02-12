@@ -15,7 +15,11 @@ import { Formik } from 'formik'
 import { object, string } from 'yup'
 
 import { primaryColor } from '../../resources'
-import { NationalityItems, TitleItems } from '../../resources/mocks'
+import {
+  GenderRadioItems,
+  NationalityItems,
+  TitleItems
+} from '../../resources/mocks'
 import { UpdateProfileMutation } from '../../resources/mutations'
 import { ProfileQuery } from '../../resources/queries'
 import { AppBar, DatePicker, Picker, Radio } from '../../components'
@@ -38,6 +42,7 @@ const ProfileScreen = ({ navigation }) => {
   console.log('ProfileScreen photoUri', photoUri)
 
   const handleUpdateProfile = async values => {
+    //console.log('handleUpdateProfile values', values)
     try {
       setToggleSnackbar(true)
       const res = await updateProfile({
@@ -166,16 +171,7 @@ const ProfileScreen = ({ navigation }) => {
                   />
                   <Radio
                     color={primaryColor}
-                    items={[
-                      {
-                        label: 'Male',
-                        value: 'Male'
-                      },
-                      {
-                        label: 'Female',
-                        value: 'Female'
-                      }
-                    ]}
+                    items={GenderRadioItems}
                     label="Gender"
                     orientation="horizontal"
                     value={values.Sex}

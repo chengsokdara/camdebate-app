@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { Linking } from 'react-native'
 import {
   Button,
   Caption,
@@ -10,10 +11,20 @@ import {
   TouchableRipple
 } from 'react-native-paper'
 
+import { primaryColor } from '../../../../resources'
 import { formatString } from '../../../../service'
 
 const FeedItem = ({ item }) => {
-  const { ListData, ListTitle, Message, SubTitle, TableData, Title } = item
+  const {
+    ListData,
+    ListTitle,
+    Message,
+    Note,
+    NoteUrl,
+    SubTitle,
+    TableData,
+    Title
+  } = item
   //console.log('NewsFeedItem', item)
 
   const ListDataJson = ListData ? JSON.parse(ListData) : null
@@ -21,6 +32,45 @@ const FeedItem = ({ item }) => {
 
   const TableDataJson = TableData ? JSON.parse(TableData) : null
   //console.log('TableDataJson', TableDataJson)
+
+  const renderNote = (Note, NoteUrl) => {
+    console.log('Note', Note)
+    if (Note.includes('{{') && Note.includes('}}')) {
+      const start = Note.lastIndexOf('{{')
+      const end = Note.lastIndexOf('}}')
+      const buttonLabel = Note.substring(start + 2, end)
+      console.log('buttonLabel', buttonLabel)
+      return (
+        <>
+          <TextMessage>{Note.substring(0, start - 1)}</TextMessage>
+          <Button
+            mode="contained"
+            contentStyle={{
+              height: 50,
+              paddingHorizontal: 10
+            }}
+            onPress={() => Linking.openURL(NoteUrl)}>
+            {buttonLabel}
+          </Button>
+        </>
+      )
+    }
+    if (Note.includes('{') && Note.includes('}')) {
+      const start = Note.lastIndexOf('{')
+      const end = Note.lastIndexOf('}')
+      const buttonLabel = Note.substring(start + 1, end)
+      console.log('buttonLabel', buttonLabel)
+      return (
+        <Link
+          color={primaryColor}
+          style={{ color: 'blue' }}
+          onPress={() => Linking.openURL(NoteUrl)}>
+          {buttonLabel}
+        </Link>
+      )
+    }
+    return <></>
+  }
 
   return (
     <Container borderless onPress={() => {}}>
@@ -54,6 +104,7 @@ const FeedItem = ({ item }) => {
                 </ListContainer>
               ))
             : null}
+          {Note ? renderNote(Note, NoteUrl) : null}
         </CardContent>
       </Card>
     </Container>

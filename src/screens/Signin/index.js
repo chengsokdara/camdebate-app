@@ -36,7 +36,7 @@ const SigninSchemaEmail = object().shape({
     .min(7, 'Email must be at least 7 characters.')
     .max(50, 'Email length is too long.')
     .email('Email is not valid.')
-    .required('Phone number is required!'),
+    .required('Email is required!'),
   Password: string()
     .min(6, 'Password should be at least 6 characters.')
     .max(50, 'Password length is too long.')
@@ -51,7 +51,7 @@ const SigninScreen = ({ navigation }) => {
   console.log('SigninScreen data', data, 'error', error)
 
   const handleLogin = async values => {
-    console.log('handleLogin', values)
+    console.log('handleLogin values', values)
     try {
       const res = await login({
         variables: {

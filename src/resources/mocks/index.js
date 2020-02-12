@@ -3,6 +3,39 @@ export { default as MockNews } from './news'
 export { default as MockNotification } from './notification'
 export { default as MockRegistration } from './registration'
 
+export const CityProvinceItems = [
+  {
+    label: 'Phnom Penh',
+    value: 'Phnom Penh'
+  }
+]
+
+export const CompetitionCategoryItems = [
+  {
+    label: 'Public Speaking',
+    value: 'Public Speaking'
+  },
+  {
+    label: 'Debate',
+    value: 'Debate'
+  }
+]
+
+export const CompetitionLevelItems = [
+  {
+    label: 'High School',
+    value: 'High School'
+  },
+  {
+    label: 'University',
+    value: 'University'
+  },
+  {
+    label: 'Young Professionals',
+    value: 'Young Professionals'
+  }
+]
+
 export const CountryItems = [
   {
     label: '',
@@ -35,6 +68,17 @@ export const GenderItems = [
     label: '',
     value: ''
   },
+  {
+    label: 'Male',
+    value: 'Male'
+  },
+  {
+    label: 'Female',
+    value: 'Female'
+  }
+]
+
+export const GenderRadioItems = [
   {
     label: 'Male',
     value: 'Male'
@@ -89,5 +133,32 @@ export const TitleItems = [
   {
     label: 'Prof',
     value: 'Prof'
+  },
+  {
+    label: 'HE',
+    value: 'HE'
+  }
+]
+
+export const TeeShirtSizeItems = [
+  {
+    label: 'S',
+    value: 'S'
+  },
+  {
+    label: 'M',
+    value: 'M'
+  },
+  {
+    label: 'M/L',
+    value: 'M/L'
+  },
+  {
+    label: 'L',
+    value: 'L'
+  },
+  {
+    label: 'XL',
+    value: 'XL'
   }
 ]

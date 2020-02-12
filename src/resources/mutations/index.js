@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { ContactFragment } from '../fragments'
 
 export const LoginMutation = gql`
-  mutation Login($input: LoginInput) {
+  mutation Login($input: LoginInput!) {
     login(input: $input) {
       code
       success
@@ -13,7 +13,7 @@ export const LoginMutation = gql`
 `
 
 export const RegisterMutation = gql`
-  mutation Register($input: RegisterInput) {
+  mutation Register($input: RegisterInput!) {
     register(input: $input) {
       code
       success
@@ -33,8 +33,19 @@ export const RegisterMutation = gql`
   }
 `
 
+export const ResetPasswordMutation = gql`
+  mutation ResetPassword($input: ResetPasswordInput!) {
+    resetPassword(input: $input) {
+      code
+      success
+      message
+      token
+    }
+  }
+`
+
 export const UpdateProfileMutation = gql`
-  mutation UpdateProfile($input: ContactInput) {
+  mutation UpdateProfile($input: ContactInput!) {
     updateProfile(input: $input) {
       ...ContactFragment
     }

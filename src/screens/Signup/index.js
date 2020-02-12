@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components/native'
 import { useDispatch } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
@@ -70,6 +70,11 @@ const TEST_REGISTER_DATA = {
 
 const SignupScreen = ({ navigation }) => {
   const dispatch = useDispatch()
+  const refGivenName = useRef()
+  const refFamilyName = useRef()
+  const refPhone = useRef()
+  const refEmail = useRef()
+  const refPassword = useRef()
   const [register, { data }] = useMutation(RegisterMutation)
 
   console.log('SignupScreen data', data)
@@ -77,11 +82,6 @@ const SignupScreen = ({ navigation }) => {
   const handleRegister = async values => {
     console.log('handleRegister values', values)
     try {
-      const res = await register({
-        variables: {
-          input: values
-        }
-      })
       /*
       register({
         variables: {
@@ -89,27 +89,22 @@ const SignupScreen = ({ navigation }) => {
         }
       })
       */
+      const res = await register({
+        variables: {
+          input: values
+        }
+      })
+      const { code, token } = res.data.register
+      if (code === 200) {
+        const logged = await dispatch(loginAsync(token))
+        console.log('SignupScreen logged', logged)
+        if (logged) navigation.navigate('App')
+      }
       console.log('handleRegister response', res)
-      const { code } = res.data.register
-      if (code === 200) setToggleSnackbar(false)
     } catch (e) {
       console.log('handleRegister e', e)
     }
   }
-
-  useEffect(() => {
-    if (
-      data &&
-      data.register &&
-      data.register.token &&
-      data.register.code === 200
-    ) {
-      dispatch(loginAsync(data.register.token)).then(token => {
-        console.log('SignupScreen logged in', token)
-        if (token) navigation.navigate('App')
-      })
-    }
-  }, [data])
 
   return (
     <Container>
@@ -138,6 +133,7 @@ const SignupScreen = ({ navigation }) => {
                     onChangeValue={handleChange('Title')}
                   />
                   <TextInputMargined
+                    ref={refGivenName}
                     autoCompleteType="name"
                     label="Given Name"
                     mode="outlined"
@@ -145,6 +141,7 @@ const SignupScreen = ({ navigation }) => {
                     value={values.GivenName}
                     onChangeText={handleChange('GivenName')}
                     onBlur={handleBlur('GivenName')}
+                    onSubmitEditing={() => refFamilyName.current.focus()}
                   />
                   {errors.GivenName ? (
                     <HelperText padding="none" type="error">
@@ -152,6 +149,7 @@ const SignupScreen = ({ navigation }) => {
                     </HelperText>
                   ) : null}
                   <TextInputMargined
+                    ref={refFamilyName}
                     autoCompleteType="name"
                     label="Family Name"
                     mode="outlined"
@@ -159,6 +157,7 @@ const SignupScreen = ({ navigation }) => {
                     value={values.FamilyName}
                     onChangeText={handleChange('FamilyName')}
                     onBlur={handleBlur('FamilyName')}
+                    onSubmitEditing={() => refPhone.current.focus()}
                   />
                   {errors.FamilyName ? (
                     <HelperText padding="none" type="error">
@@ -178,6 +177,7 @@ const SignupScreen = ({ navigation }) => {
                     onChangeValue={handleChange('Country')}
                   />
                   <TextInputMargined
+                    ref={refPhone}
                     autoCompleteType="tel"
                     keyboardType="phone-pad"
                     label="Phone (Cambodia)"
@@ -186,6 +186,7 @@ const SignupScreen = ({ navigation }) => {
                     value={values.Phone}
                     onChangeText={handleChange('Phone')}
                     onBlur={handleBlur('Phone')}
+                    onSubmitEditing={() => refEmail.current.focus()}
                   />
                   {errors.Phone ? (
                     <HelperText padding="none" type="error">
@@ -193,6 +194,7 @@ const SignupScreen = ({ navigation }) => {
                     </HelperText>
                   ) : null}
                   <TextInputMargined
+                    ref={refEmail}
                     autoCompleteType="email"
                     keyboardType="email-address"
                     label="E-Mail (Optional)"
@@ -201,6 +203,7 @@ const SignupScreen = ({ navigation }) => {
                     value={values.Email}
                     onChangeText={handleChange('Email')}
                     onBlur={handleBlur('Email')}
+                    onSubmitEditing={() => refPassword.current.focus()}
                   />
                   {errors.Email ? (
                     <HelperText padding="none" type="error">
@@ -208,6 +211,7 @@ const SignupScreen = ({ navigation }) => {
                     </HelperText>
                   ) : null}
                   <TextInput
+                    ref={refPassword}
                     secureTextEntry
                     autoCompleteType="password"
                     label="New Password"
@@ -216,6 +220,7 @@ const SignupScreen = ({ navigation }) => {
                     value={values.Password}
                     onChangeText={handleChange('Password')}
                     onBlur={handleBlur('Password')}
+                    onSubmitEditing={() => refGivenName.current.focus()}
                   />
                   {errors.Password ? (
                     <HelperText padding="none" type="error">
