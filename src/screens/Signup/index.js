@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components/native'
-import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Button, Card as PaperCard, TextInput } from 'react-native-paper'
+import {
+  Button,
+  Card as PaperCard,
+  HelperText,
+  TextInput
+} from 'react-native-paper'
+import { Formik } from 'formik'
+import { object, string } from 'yup'
 
 import { AppBar, Picker } from '../../components'
 import { RegisterMutation } from '../../resources/mutations'
@@ -12,15 +19,43 @@ import {
   NationalityItems,
   CountryItems
 } from '../../resources/mocks'
-import { loginAsync, signupInputChange } from '../../service'
+import { loginAsync } from '../../service'
 
-const INITIAL_LOCAL_STATE = {
-  Email: undefined,
-  FamilyName: undefined,
-  GivenName: undefined,
-  Password: undefined,
-  Phone: undefined
+const InitialValues = {
+  Title: '',
+  GivenName: '',
+  FamilyName: '',
+  Nationality: '',
+  Country: '',
+  Phone: '',
+  Email: '',
+  Password: ''
 }
+
+const SignupSchema = object().shape({
+  GivenName: string()
+    .min(2, 'Given name must be at least 2 characters.')
+    .max(50, 'Given name length is too long.'),
+  FamilyName: string()
+    .min(2, 'Family name must be at least 2 characters.')
+    .max(50, 'Family name length is too long.'),
+  Phone: string()
+    .min(7, 'Phone number must be at least 9 characters.')
+    .max(15, 'Phone number length is too long.')
+    .matches(
+      /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
+      'Phone number is not valid.'
+    )
+    .required('Phone number is required!'),
+  Email: string()
+    .min(7, 'Email must be at least 7 characters.')
+    .max(50, 'Email length is too long.')
+    .email('Email is not valid.'),
+  Password: string()
+    .min(6, 'Password should be at least 6 characters.')
+    .max(50, 'Password length is too long.')
+    .required('Password is required!')
+})
 
 const TEST_REGISTER_DATA = {
   Country: 'Cambodia',
@@ -35,49 +70,31 @@ const TEST_REGISTER_DATA = {
 
 const SignupScreen = ({ navigation }) => {
   const dispatch = useDispatch()
-  const globalState = useSelector(state => state.signup, shallowEqual)
-  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE)
   const [register, { data }] = useMutation(RegisterMutation)
 
-  const { Country, Nationality, Title } = globalState
-  const { Email, FamilyName, GivenName, Password, Phone } = localState
   console.log('SignupScreen data', data)
-  console.log('SignupScreen globalState', globalState)
-  console.log('SignupScreen localState', localState)
 
-  const handleTextChange = type => newValue => {
-    setLocalState({
-      ...localState,
-      [type]: newValue
-    })
-  }
-
-  const handleValueChange = (type, newValue) => {
-    dispatch(signupInputChange(type, newValue))
-  }
-
-  const handleRegister = () => {
-    register({
-      variables: {
-        input: {
-          Country,
-          Email: globalState.Email,
-          FamilyName: globalState.FamilyName,
-          GivenName: globalState.GivenName,
-          Nationality,
-          Password: globalState.Password,
-          Phone: globalState.Phone,
-          Title
+  const handleRegister = async values => {
+    console.log('handleRegister values', values)
+    try {
+      const res = await register({
+        variables: {
+          input: values
         }
-      }
-    })
-    /*
-    register({
-      variables: {
-        input: TEST_REGISTER_DATA
-      }
-    })
-    */
+      })
+      /*
+      register({
+        variables: {
+          input: TEST_REGISTER_DATA
+        }
+      })
+      */
+      console.log('handleRegister response', res)
+      const { code } = res.data.register
+      if (code === 200) setToggleSnackbar(false)
+    } catch (e) {
+      console.log('handleRegister e', e)
+    }
   }
 
   useEffect(() => {
@@ -102,76 +119,120 @@ const SignupScreen = ({ navigation }) => {
           flexGrow: 1,
           padding: 10
         }}>
-        <Card>
-          <Card.Title
-            title="Sign Up"
-            subtitle="CamDEBATE account registration"
-          />
-          <Card.Content>
-            <PickerMargined
-              items={TitleItems}
-              label="Select Title"
-              value={Title}
-              onChangeValue={value => handleValueChange('Title', value)}
-            />
-            <TextInputMargined
-              label="Given Name"
-              mode="outlined"
-              value={GivenName}
-              onChangeText={handleTextChange('GivenName')}
-              onBlur={() => handleValueChange('GivenName', GivenName)}
-            />
-            <TextInputMargined
-              label="Family Name"
-              mode="outlined"
-              value={FamilyName}
-              onChangeText={handleTextChange('FamilyName')}
-              onBlur={() => handleValueChange('FamilyName', FamilyName)}
-            />
-            <PickerMargined
-              items={NationalityItems}
-              label="Select Nationality"
-              value={Nationality}
-              onChangeValue={value => handleValueChange('Nationality', value)}
-            />
-            <PickerMargined
-              items={CountryItems}
-              label="Select Country"
-              value={Country}
-              onChangeValue={value => handleValueChange('Country', value)}
-            />
-            <TextInputMargined
-              label="Phone (Cambodia)"
-              mode="outlined"
-              value={Phone}
-              onChangeText={handleTextChange('Phone')}
-              onBlur={() => handleValueChange('Phone', Phone)}
-            />
-            <TextInputMargined
-              label="E-Mail (Optional)"
-              mode="outlined"
-              value={Email}
-              onChangeText={handleTextChange('Email')}
-              onBlur={() => handleValueChange('Email', Email)}
-            />
-            <TextInput
-              autoCompleteType="password"
-              label="New Password"
-              mode="outlined"
-              secureTextEntry={true}
-              textContentType="password"
-              value={Password}
-              onChangeText={handleTextChange('Password')}
-              onBlur={() => handleValueChange('Password', Password)}
-            />
-          </Card.Content>
-        </Card>
-        <Button
-          mode="contained"
-          contentStyle={{ width: '100%', height: 50 }}
-          onPress={handleRegister}>
-          Register
-        </Button>
+        <Formik
+          initialValues={InitialValues}
+          validationSchema={SignupSchema}
+          onSubmit={handleRegister}>
+          {({ handleChange, handleBlur, handleSubmit, errors, values }) => (
+            <>
+              <Card>
+                <Card.Title
+                  title="Sign Up"
+                  subtitle="CamDEBATE account registration"
+                />
+                <Card.Content>
+                  <PickerMargined
+                    items={TitleItems}
+                    label="Select Title"
+                    value={values.Title}
+                    onChangeValue={handleChange('Title')}
+                  />
+                  <TextInputMargined
+                    autoCompleteType="name"
+                    label="Given Name"
+                    mode="outlined"
+                    textContentType="givenName"
+                    value={values.GivenName}
+                    onChangeText={handleChange('GivenName')}
+                    onBlur={handleBlur('GivenName')}
+                  />
+                  {errors.GivenName ? (
+                    <HelperText padding="none" type="error">
+                      {errors.GivenName}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    autoCompleteType="name"
+                    label="Family Name"
+                    mode="outlined"
+                    textContentType="familyName"
+                    value={values.FamilyName}
+                    onChangeText={handleChange('FamilyName')}
+                    onBlur={handleBlur('FamilyName')}
+                  />
+                  {errors.FamilyName ? (
+                    <HelperText padding="none" type="error">
+                      {errors.FamilyName}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={NationalityItems}
+                    label="Select Nationality"
+                    value={values.Nationality}
+                    onChangeValue={handleChange('Nationality')}
+                  />
+                  <PickerMargined
+                    items={CountryItems}
+                    label="Select Country"
+                    value={values.Country}
+                    onChangeValue={handleChange('Country')}
+                  />
+                  <TextInputMargined
+                    autoCompleteType="tel"
+                    keyboardType="phone-pad"
+                    label="Phone (Cambodia)"
+                    mode="outlined"
+                    textContentType="telephoneNumber"
+                    value={values.Phone}
+                    onChangeText={handleChange('Phone')}
+                    onBlur={handleBlur('Phone')}
+                  />
+                  {errors.Phone ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Phone}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    autoCompleteType="email"
+                    keyboardType="email-address"
+                    label="E-Mail (Optional)"
+                    mode="outlined"
+                    textContentType="emailAddress"
+                    value={values.Email}
+                    onChangeText={handleChange('Email')}
+                    onBlur={handleBlur('Email')}
+                  />
+                  {errors.Email ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Email}
+                    </HelperText>
+                  ) : null}
+                  <TextInput
+                    secureTextEntry
+                    autoCompleteType="password"
+                    label="New Password"
+                    mode="outlined"
+                    textContentType="password"
+                    value={values.Password}
+                    onChangeText={handleChange('Password')}
+                    onBlur={handleBlur('Password')}
+                  />
+                  {errors.Password ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Password}
+                    </HelperText>
+                  ) : null}
+                </Card.Content>
+              </Card>
+              <Button
+                mode="contained"
+                contentStyle={{ width: '100%', height: 50 }}
+                onPress={handleSubmit}>
+                Register
+              </Button>
+            </>
+          )}
+        </Formik>
         <Footer>
           <Text>Already has a CamDEBATE account?</Text>
           <ButtonSignin

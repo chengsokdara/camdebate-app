@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
@@ -7,21 +7,16 @@ import {
   HelperText,
   TextInput
 } from 'react-native-paper'
-import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { Formik } from 'formik'
 import { object, string } from 'yup'
 
 import { AppBar } from '../../components'
 import { LoginMutation } from '../../resources/mutations'
-import { loginAsync, signinInputChange } from '../../service'
+import { loginAsync } from '../../service'
 
-const INITIAL_LOCAL_STATE = {
-  Phone: undefined,
-  Password: undefined
-}
-
-const SignupSchemaPhone = object().shape({
+const SigninSchemaPhone = object().shape({
   Phone: string()
     .min(7, 'Phone number must be at least 9 characters.')
     .max(15, 'Phone number length is too long.')
@@ -36,7 +31,7 @@ const SignupSchemaPhone = object().shape({
     .required('Password is required!')
 })
 
-const SignupSchemaEmail = object().shape({
+const SigninSchemaEmail = object().shape({
   Phone: string()
     .min(7, 'Email must be at least 7 characters.')
     .max(50, 'Email length is too long.')
@@ -50,50 +45,30 @@ const SignupSchemaEmail = object().shape({
 
 const SigninScreen = ({ navigation }) => {
   const dispatch = useDispatch()
-  const globalState = useSelector(state => state.signin, shallowEqual)
+  const refPassword = useRef()
   const [signinBy, setSigninBy] = useState('Phone')
-  const [localState, setLocalState] = useState(INITIAL_LOCAL_STATE)
-  const [login, { data, error: loginError }] = useMutation(LoginMutation)
-  console.log('SigninScreen data', data, 'loginError', loginError)
-  console.log('SigninScreen globalState', globalState)
-  console.log('SigninScreen localState', localState)
+  const [login, { data, loading, error }] = useMutation(LoginMutation)
+  console.log('SigninScreen data', data, 'error', error)
 
-  const { Phone, Password } = localState
-
-  const handleTextChange = type => newValue => {
-    setLocalState({
-      ...localState,
-      [type]: newValue
-    })
-  }
-
-  const handleValueChange = type => {
-    dispatch(signinInputChange(type, localState[type]))
-  }
-
-  const handleLogin = async () => {
+  const handleLogin = async values => {
+    console.log('handleLogin', values)
     try {
-      await login({
+      const res = await login({
         variables: {
-          input: {
-            Phone: globalState.Phone,
-            Password: globalState.Password
-          }
+          input: values
         }
       })
+      const { code, token } = res.data.login
+      if (code === 200) {
+        const logged = await dispatch(loginAsync(token))
+        console.log('SigninScreen logged', logged)
+        if (logged) navigation.navigate('App')
+      }
+      console.log('handleLogin response', res)
     } catch (e) {
       console.log('handleLogin e', e)
     }
   }
-
-  useEffect(() => {
-    if (data && data.login && data.login.token && data.login.code === 200) {
-      dispatch(loginAsync(data.login.token)).then(token => {
-        console.log('SigninScreen logged in', token)
-        if (token) navigation.navigate('App')
-      })
-    }
-  }, [data])
 
   return (
     <Container>
@@ -101,9 +76,9 @@ const SigninScreen = ({ navigation }) => {
       <Formik
         initialValues={{ Phone: '', Password: '' }}
         validationSchema={
-          signinBy === 'Phone' ? SignupSchemaPhone : SignupSchemaEmail
+          signinBy === 'Phone' ? SigninSchemaPhone : SigninSchemaEmail
         }
-        onSubmit={values => console.log('valuves', values)}>
+        onSubmit={handleLogin}>
         {({ handleChange, handleBlur, handleSubmit, errors, values }) => (
           <Content
             contentContainerStyle={{
@@ -114,11 +89,20 @@ const SigninScreen = ({ navigation }) => {
               <Card.Title title="Sign In" subtitle="CamDEBATE account login" />
               <Card.Content>
                 <TextInputMargined
+                  autoFocus
+                  autoCompleteType={signinBy === 'Phone' ? 'tel' : 'email'}
+                  keyboardType={
+                    signinBy === 'Phone' ? 'phone-pad' : 'email-address'
+                  }
                   label={signinBy === 'Phone' ? 'Phone (Cambodia)' : 'Email'}
                   mode="outlined"
+                  textContentType={
+                    signinBy === 'Phone' ? 'telephoneNumber' : 'emailAddress'
+                  }
                   value={values.Phone}
                   onChangeText={handleChange('Phone')}
                   onBlur={handleBlur('Phone')}
+                  onSubmitEditing={() => refPassword.current.focus()}
                 />
                 {errors.Phone ? (
                   <HelperText padding="none" type="error">
@@ -126,14 +110,17 @@ const SigninScreen = ({ navigation }) => {
                   </HelperText>
                 ) : null}
                 <TextInput
+                  ref={refPassword}
+                  secureTextEntry
                   autoCompleteType="password"
                   label="Password"
                   mode="outlined"
-                  secureTextEntry={true}
+                  returnKeyType="go"
                   textContentType="password"
                   value={values.Password}
                   onChangeText={handleChange('Password')}
                   onBlur={handleBlur('Password')}
+                  onSubmitEditing={handleSubmit}
                 />
                 {errors.Password ? (
                   <HelperText padding="none" type="error">
@@ -143,18 +130,23 @@ const SigninScreen = ({ navigation }) => {
               </Card.Content>
             </Card>
             <ButtonLogin
+              disabled={loading}
+              loading={loading}
               mode="contained"
               contentStyle={{ width: '100%', height: 50 }}
               onPress={handleSubmit}>
               Login
             </ButtonLogin>
             <Button
+              disabled={loading}
               onPress={() =>
                 setSigninBy(signinBy === 'Phone' ? 'Email' : 'Phone')
               }>
               {`Login by ${signinBy === 'Phone' ? 'Email' : 'Phone'}?`}
             </Button>
-            <Button onPress={() => navigation.navigate('Forgot')}>
+            <Button
+              disabled={loading}
+              onPress={() => navigation.navigate('Forgot')}>
               Forget password?
             </Button>
           </Content>
@@ -163,6 +155,7 @@ const SigninScreen = ({ navigation }) => {
       <Footer>
         <Text>Do not have a CamDEBATE account?</Text>
         <ButtonSignup
+          disabled={loading}
           mode="contained"
           contentStyle={{ height: 50 }}
           onPress={() => navigation.navigate('Signup')}>
@@ -208,30 +201,3 @@ const TextInputMargined = styled(TextInput)`
 `
 
 export default SigninScreen
-
-/*
-<TextInputMargined
-  label="Phone (Cambodia) or E-Mail"
-  error={loginError || (data && !data.login.success)}
-  mode="outlined"
-  value={Phone}
-  onChangeText={handleTextChange('Phone')}
-  onBlur={handleValueChange('Phone')}
-/>
-<TextInput
-  autoCompleteType="password"
-  error={loginError || (data && !data.login.success)}
-  label="Password"
-  mode="outlined"
-  secureTextEntry={true}
-  textContentType="password"
-  value={Password}
-  onChangeText={handleTextChange('Password')}
-  onBlur={handleValueChange('Password')}
-/>
-{loginError || (data && !data.login.success) ? (
-  <HelperText padding="none" type="error">
-    {loginError ? loginError.message : 'Invalid credentials'}
-  </HelperText>
-) : null}
-*/
