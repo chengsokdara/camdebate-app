@@ -120,11 +120,14 @@ const SigninScreen = ({ navigation }) => {
                   value={values.Password}
                   onChangeText={handleChange('Password')}
                   onBlur={handleBlur('Password')}
-                  onSubmitEditing={handleSubmit}
                 />
-                {errors.Password ? (
+                {(data && data.login && data.login.code === 401) ||
+                error ||
+                errors.Password ? (
                   <HelperText padding="none" type="error">
-                    {errors.Password}
+                    {(data && data.login && data.login.message) ||
+                      (error && error.message) ||
+                      errors.Password}
                   </HelperText>
                 ) : null}
               </Card.Content>

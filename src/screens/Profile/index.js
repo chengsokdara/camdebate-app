@@ -106,7 +106,7 @@ const ProfileScreen = ({ navigation }) => {
               <Column>
                 <Button
                   mode="contained"
-                  contentStyle={{ height: 48 }}
+                  contentStyle={{ width: 160, height: 48 }}
                   onPress={() =>
                     ImagePicker.launchImageLibrary({}, response => {
                       console.log('Response', response)
@@ -118,7 +118,7 @@ const ProfileScreen = ({ navigation }) => {
                 <Button
                   color="red"
                   mode="contained"
-                  contentStyle={{ height: 48 }}
+                  contentStyle={{ width: 160, height: 48 }}
                   onPress={() => {
                     console.log('Remove image.')
                     setPhotoUri(undefined)

@@ -1,20 +1,11 @@
 import React from 'react'
 import styled from 'styled-components/native'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Linking } from 'react-native'
-import {
-  Button,
-  Caption,
-  Card as PaperCard,
-  DataTable as PaperTable,
-  List,
-  TouchableRipple
-} from 'react-native-paper'
+import { Button, Card as PaperCard, List } from 'react-native-paper'
 
 import { primaryColor } from '../../../../resources'
 import { formatString } from '../../../../service'
 
-const FeedItem = ({ item }) => {
+const FeedItem = ({ item, last, navigation }) => {
   const {
     ListData,
     ListTitle,
@@ -42,46 +33,48 @@ const FeedItem = ({ item }) => {
       console.log('buttonLabel', buttonLabel)
       return (
         <>
-          <TextMessage>{Note.substring(0, start - 1)}</TextMessage>
-          <Button
+          <CardMessage>{Note.substring(0, start - 1)}</CardMessage>
+          <ButtonContained
             mode="contained"
             contentStyle={{
               height: 50,
               paddingHorizontal: 10
             }}
-            onPress={() => Linking.openURL(NoteUrl)}>
+            onPress={() => navigation.navigate('Web', { uri: NoteUrl })}>
             {buttonLabel}
-          </Button>
+          </ButtonContained>
         </>
       )
     }
     if (Note.includes('{') && Note.includes('}')) {
       const start = Note.lastIndexOf('{')
       const end = Note.lastIndexOf('}')
+      const startNote = Note.substring(0, start)
+      const endNote = Note.substring(end + 1, Note.length)
       const buttonLabel = Note.substring(start + 1, end)
       console.log('buttonLabel', buttonLabel)
       return (
-        <Link
-          color={primaryColor}
-          style={{ color: 'blue' }}
-          onPress={() => Linking.openURL(NoteUrl)}>
-          {buttonLabel}
-        </Link>
+        <CardMessage>
+          {startNote || ''}
+          <Link
+            color={primaryColor}
+            onPress={() => navigation.navigate('Web', { uri: NoteUrl })}>
+            {buttonLabel}
+          </Link>
+          {endNote || ''}
+        </CardMessage>
       )
     }
-    return <></>
+    return null
   }
 
   return (
-    <Container borderless onPress={() => {}}>
-      <Card>
+    <Container>
+      <Card last={last}>
         <CardContent>
-          <CardTitle
-            title={Title}
-            subtitle={SubTitle}
-            titleStyle={{ fontSize: 24 }}
-          />
-          {Message ? <TextMessage>{formatString(Message)}</TextMessage> : null}
+          {Title ? <CardTitle>{Title}</CardTitle> : null}
+          {SubTitle ? <CardSubTitle>{SubTitle}</CardSubTitle> : null}
+          {Message ? <CardMessage>{formatString(Message)}</CardMessage> : null}
           {TableDataJson
             ? TableDataJson.map((table, index) => (
                 <TableRow key={index}>
@@ -111,35 +104,56 @@ const FeedItem = ({ item }) => {
   )
 }
 
-const Card = styled(PaperCard)``
+const ButtonContained = styled(Button)`
+  margin-top: 10px;
+`
+
+const Card = styled(PaperCard)`
+  margin-top: 5px;
+  margin-bottom: ${props => (props.last ? '10px' : '5px')};
+  margin-left: 10px;
+  margin-right: 10px;
+`
 
 const CardContent = styled(PaperCard.Content)`
-  padding: 0;
+  padding: 20px;
 `
 
-const CardTitle = styled(PaperCard.Title)`
-  margin-top: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+const CardMessage = styled.Text`
+  color: #757575;
+  font-size: 16px;
+  margin-top: 20px;
 `
 
-const Container = styled(TouchableRipple)`
+const CardSubTitle = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: #757575;
+  margin-top: 5px;
+`
+
+const CardTitle = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+`
+
+const Container = styled.View`
   border-radius: 10px;
-  margin: 5px;
+`
+
+const Link = styled.Text`
+  font-size: 16px;
+  color: ${props => props.color};
 `
 
 const ListContainer = styled.View`
-  padding: 0;
-  margin: 0;
+  margin-top: 20px;
 `
 
 const ListText = styled.Text`
   color: #757575;
   font-size: 16px;
   font-weight: bold;
-  padding-bottom: 20px;
-  padding-left: 40px;
-  padding-right: 40px;
 `
 
 const TableColumn = styled.View``
@@ -155,51 +169,15 @@ const TableHeader = styled.Text`
 `
 
 const TableRow = styled.View`
-  margin-left: 15px;
-  margin-right: 15px;
-  margin-bottom: 20px;
   border: 1px solid #eeeeee;
   border-radius: 10px;
+  margin-top: 20px;
 `
 
 const TableText = styled.Text`
   color: #757575;
   font-size: 16px;
   padding: 10px;
-`
-
-const Text = styled.Text`
-  font-size: 14px;
-`
-
-const TextMessage = styled.Text`
-  color: #757575;
-  font-size: 16px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 20px;
-`
-
-const ContainerSection = styled.View`
-  flex-direction: row;
-  align-items: center;
-`
-
-const Link = styled.Text`
-  font-size: 12px;
-  color: ${props => props.color};
-  margin-left: 5px;
-  margin-right: 5px;
-  padding-left: 5px;
-`
-
-const SectionTitle = styled.Text`
-  color: ${props => (props.color ? props.color : 'black')};
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
 `
 
 export default FeedItem

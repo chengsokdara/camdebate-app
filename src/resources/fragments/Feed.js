@@ -18,6 +18,7 @@ export const FeedFragment = gql`
       ListData
       Note
       NoteUrl
+      Announcement
     }
   }
 `
@@ -40,6 +41,7 @@ export const FeedsFragment = gql`
       ListData
       Note
       NoteUrl
+      Announcement
     }
   }
 `

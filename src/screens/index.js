@@ -30,6 +30,7 @@ import SigninScreen from './Signin'
 import SignupScreen from './Signup'
 import TermScreen from './Term'
 import TestScreen from './Test'
+import WebScreen from './Web'
 //import WelcomeScreen from './Welcome'
 
 const NotificationNavigator = createStackNavigator(
@@ -39,6 +40,17 @@ const NotificationNavigator = createStackNavigator(
   },
   {
     initialRouteName: 'List',
+    headerMode: 'none'
+  }
+)
+
+const FeedNavigator = createStackNavigator(
+  {
+    Feed: FeedScreen,
+    Web: WebScreen
+  },
+  {
+    initialRouteName: 'Feed',
     headerMode: 'none'
   }
 )
@@ -53,7 +65,7 @@ const BottomNavigator = createMaterialBottomTabNavigator(
       }
     },
     Feed: {
-      screen: FeedScreen,
+      screen: FeedNavigator,
       navigationOptions: {
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="home" />
       }
@@ -142,7 +154,7 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
       }
     },
     Feed: {
-      screen: FeedScreen,
+      screen: FeedNavigator,
       navigationOptions: {
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="school" />
       }
