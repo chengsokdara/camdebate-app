@@ -23,6 +23,7 @@ import FaqScreen from './Faq'
 import FeedScreen from './Feed'
 import ForgotPasswordScreen from './Forgot'
 import MainScreen from './Main'
+import MaintenanceScreen from './Maintenance'
 import NotificationScreen from './Notification'
 import NotificationDetailScreen from './Notification/detail'
 import PaymentScreen from './Payment'
@@ -36,7 +37,7 @@ import TestScreen from './Test'
 import WebScreen from './Web'
 //import WelcomeScreen from './Welcome'
 
-const MainRouteName = 'AuthLoading' // options: App | Auth | AuthLoading | Test
+const MainRouteName = 'Main' // options: App | Auth | Main | Test
 const AuthRouteName = 'Feed'
 const AuthDrawerRouteName = 'Feed'
 const AppRouteName = 'Feed'
@@ -225,8 +226,9 @@ const AuthDrawerNavigator = createDrawerNavigator(
 const AppNavigator = createSwitchNavigator(
   {
     Auth: AuthDrawerNavigator,
-    AuthLoading: MainScreen,
+    Main: MainScreen,
     App: DrawerNavigator,
+    Maintenance: MaintenanceScreen,
     Test: TestScreen
   },
   {

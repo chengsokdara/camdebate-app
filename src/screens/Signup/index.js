@@ -19,6 +19,7 @@ import {
   Button,
   Card as PaperCard,
   HelperText,
+  Snackbar,
   TextInput
 } from 'react-native-paper'
 import { Formik } from 'formik'
@@ -47,7 +48,8 @@ const InitialValues = {
 const SignupSchema = object().shape({
   GivenName: string()
     .min(2, 'Given name must be at least 2 characters.')
-    .max(50, 'Given name length is too long.'),
+    .max(50, 'Given name length is too long.')
+    .required('Given name is required.'),
   FamilyName: string()
     .min(2, 'Family name must be at least 2 characters.')
     .max(50, 'Family name length is too long.'),
@@ -87,20 +89,13 @@ const SignupScreen = ({ navigation }) => {
   const refPhone = useRef()
   const refEmail = useRef()
   const refPassword = useRef()
-  const [register, { data }] = useMutation(RegisterMutation)
-
-  console.log('SignupScreen data', data)
+  const [toggleSnackbar, setToggleSnackbar] = useState('')
+  const [register, { data, error, loading }] = useMutation(RegisterMutation)
+  console.log('SignupScreen data', data, 'error', error)
 
   const handleRegister = async values => {
     console.log('handleRegister values', values)
     try {
-      /*
-      register({
-        variables: {
-          input: TEST_REGISTER_DATA
-        }
-      })
-      */
       const playerJson = await AsyncStorage.getItem('player')
       const player = JSON.parse(playerJson)
       const res = await register({
@@ -116,10 +111,11 @@ const SignupScreen = ({ navigation }) => {
         const logged = await dispatch(loginAsync(token, contact))
         console.log('SignupScreen logged', logged)
         if (logged) navigation.navigate('App')
-      }
+      } else setToggleSnackbar('There is some errors!')
       console.log('handleRegister response', res)
     } catch (e) {
       console.log('handleRegister e', e)
+      setToggleSnackbar('Unknown Error!')
     }
   }
 
@@ -136,8 +132,8 @@ const SignupScreen = ({ navigation }) => {
           validationSchema={SignupSchema}
           onSubmit={handleRegister}>
           {({
-            handleChange,
             handleBlur,
+            handleChange,
             handleSubmit,
             errors,
             touched,
@@ -269,6 +265,8 @@ const SignupScreen = ({ navigation }) => {
                 </Card.Content>
               </Card>
               <Button
+                disabled={loading}
+                loading={loading}
                 mode="contained"
                 contentStyle={{ width: '100%', height: 50 }}
                 onPress={handleSubmit}>
@@ -280,6 +278,7 @@ const SignupScreen = ({ navigation }) => {
         <Footer>
           <Text>Already has a CamDEBATE account?</Text>
           <ButtonSignin
+            disabled={loading}
             mode="contained"
             contentStyle={{ height: 50 }}
             onPress={() => navigation.navigate('Signin')}>
@@ -287,6 +286,16 @@ const SignupScreen = ({ navigation }) => {
           </ButtonSignin>
         </Footer>
       </Content>
+      <Snackbar
+        duration={5000}
+        visible={toggleSnackbar}
+        onDismiss={() => setToggleSnackbar('')}
+        action={{
+          label: 'Done',
+          onPress: () => setToggleSnackbar('')
+        }}>
+        {toggleSnackbar || 'Unknown error!'}
+      </Snackbar>
     </Container>
   )
 }

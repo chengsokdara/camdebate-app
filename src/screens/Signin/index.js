@@ -17,6 +17,7 @@ import {
   Button,
   Card as PaperCard,
   HelperText,
+  Snackbar,
   TextInput
 } from 'react-native-paper'
 import { useDispatch } from 'react-redux'
@@ -27,6 +28,11 @@ import { object, string } from 'yup'
 import { AppBar } from '../../components'
 import { LoginMutation } from '../../resources/mutations'
 import { loginAsync } from '../../service'
+
+const InitialValues = {
+  Phone: '',
+  Password: ''
+}
 
 const SigninSchemaPhone = object().shape({
   Phone: string()
@@ -59,7 +65,8 @@ const SigninScreen = ({ navigation }) => {
   const dispatch = useDispatch()
   const refPassword = useRef()
   const [signinBy, setSigninBy] = useState('Phone')
-  const [login, { data, loading, error }] = useMutation(LoginMutation)
+  const [toggleSnackbar, setToggleSnackbar] = useState('')
+  const [login, { data, error, loading }] = useMutation(LoginMutation)
   console.log('SigninScreen data', data, 'error', error)
 
   const handleLogin = async values => {
@@ -73,15 +80,16 @@ const SigninScreen = ({ navigation }) => {
           input: values
         }
       })
+      console.log('handleLogin res', res)
       const { code, token, contact } = res.data.login
       if (code === 200) {
         const logged = await dispatch(loginAsync(token, contact))
         console.log('SigninScreen logged', logged)
         if (logged) navigation.navigate('App')
-      }
-      console.log('handleLogin response', res)
+      } else setToggleSnackbar('There is some errors!')
     } catch (e) {
       console.log('handleLogin e', e)
+      setToggleSnackbar('Unknown Error!')
     }
   }
 
@@ -89,14 +97,14 @@ const SigninScreen = ({ navigation }) => {
     <Container>
       <AppBar />
       <Formik
-        initialValues={{ Phone: '', Password: '' }}
+        initialValues={InitialValues}
         validationSchema={
           signinBy === 'Phone' ? SigninSchemaPhone : SigninSchemaEmail
         }
         onSubmit={handleLogin}>
         {({
-          handleChange,
           handleBlur,
+          handleChange,
           handleSubmit,
           errors,
           touched,
@@ -143,13 +151,9 @@ const SigninScreen = ({ navigation }) => {
                   onChangeText={handleChange('Password')}
                   onBlur={handleBlur('Password')}
                 />
-                {(data && data.login && data.login.code === 401) ||
-                error ||
-                (touched.Password && errors.Password) ? (
+                {touched.Password && errors.Password ? (
                   <HelperText padding="none" type="error">
-                    {(data && data.login && data.login.message) ||
-                      (error && error.message) ||
-                      errors.Password}
+                    {errors.Password}
                   </HelperText>
                 ) : null}
               </Card.Content>
@@ -187,6 +191,16 @@ const SigninScreen = ({ navigation }) => {
           Sign Up
         </ButtonSignup>
       </Footer>
+      <Snackbar
+        duration={5000}
+        visible={toggleSnackbar}
+        onDismiss={() => setToggleSnackbar('')}
+        action={{
+          label: 'Done',
+          onPress: () => setToggleSnackbar('')
+        }}>
+        {toggleSnackbar || 'Unknown updated!'}
+      </Snackbar>
     </Container>
   )
 }

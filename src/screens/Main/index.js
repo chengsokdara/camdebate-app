@@ -41,6 +41,7 @@ const MainScreen = ({ navigation }) => {
         navigation.navigate(token ? 'App' : 'Auth')
       } catch (e) {
         console.log('initAsync error', e)
+        navigation.navigate('Maintenance')
       }
     }
 

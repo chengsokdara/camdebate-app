@@ -12,7 +12,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components/native'
 import ImagePicker from 'react-native-image-picker'
-import moment from 'moment'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
   Avatar,
@@ -26,7 +25,6 @@ import {
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { Formik } from 'formik'
-import { object, string } from 'yup'
 
 import { AppBar, DatePicker, Picker, Radio } from '../../components'
 import { primaryColor } from '../../resources'
@@ -39,22 +37,10 @@ import { UpdateProfileMutation } from '../../resources/mutations'
 import { ProfileQuery } from '../../resources/queries'
 import { setProfileAsync } from '../../service'
 
-const ProfileSchema = object().shape({
-  Title: string().required(),
-  GivenName: string().required(),
-  FamilyName: string().required(),
-  Sex: string().required(),
-  Nationality: string().required(),
-  DOB: string().required(),
-  Phone: string().required(),
-  Email: string().required(),
-  WorkPlace: string().required()
-})
-
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch()
-  const [toggleSnackbar, setToggleSnackbar] = useState(false)
   const [photoUri, setPhotoUri] = useState(undefined)
+  const [toggleSnackbar, setToggleSnackbar] = useState('')
   const [
     updateProfile,
     { data: updateData, error: updateError, loading: updateLoading }
@@ -71,7 +57,7 @@ const ProfileScreen = ({ navigation }) => {
     FamilyName: profile ? profile.FamilyName : '',
     Sex: profile ? profile.Sex : '',
     Nationality: profile ? profile.Nationality : '',
-    DOB: profile ? moment(profile.DOB).format('YYYY-MM-DD') : '',
+    DOB: profile ? profile.DOB : '',
     Phone: profile ? profile.Phone : '',
     GuardianPhone: profile ? profile.GuardianPhone : '',
     Email: profile ? profile.Email : '',
@@ -86,7 +72,6 @@ const ProfileScreen = ({ navigation }) => {
   const handleUpdateProfile = async values => {
     console.log('handleUpdateProfile values', values)
     try {
-      setToggleSnackbar(true)
       const res = await updateProfile({
         variables: {
           input: values
@@ -98,10 +83,11 @@ const ProfileScreen = ({ navigation }) => {
       const { code, contact } = res.data.updateProfile
       if (code === 200) {
         await dispatch(setProfileAsync(contact))
-        setToggleSnackbar(false)
-      }
+        setToggleSnackbar('Profile updated!')
+      } else setToggleSnackbar('There is some errors!')
     } catch (e) {
       console.log('updateProfile error', e)
+      setToggleSnackbar('Unknown Error!')
     }
   }
 
@@ -179,7 +165,6 @@ const ProfileScreen = ({ navigation }) => {
         <Formik
           enableReinitialize
           initialValues={InitialValues}
-          validationSchema={ProfileSchema}
           onSubmit={handleUpdateProfile}>
           {({
             handleChange,
@@ -368,12 +353,12 @@ All Right Reserved.
       <Snackbar
         duration={5000}
         visible={toggleSnackbar}
-        onDismiss={() => setToggleSnackbar(!toggleSnackbar)}
+        onDismiss={() => setToggleSnackbar('')}
         action={{
           label: 'Done',
-          onPress: () => setToggleSnackbar(!toggleSnackbar)
+          onPress: () => setToggleSnackbar('')
         }}>
-        Profile updated!
+        {toggleSnackbar || 'Profile updated!'}
       </Snackbar>
     </>
   )

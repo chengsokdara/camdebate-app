@@ -53,7 +53,7 @@ const SettingScreen = ({ navigation }) => {
   const dispatch = useDispatch()
   const refNewPassword = useRef()
   const refConfirmPassword = useRef()
-  const [toggleSnackbar, setToggleSnackbar] = useState(false)
+  const [toggleSnackbar, setToggleSnackbar] = useState('')
   const [
     resetPassword,
     { data: dataReset, loading: loadingReset, error: errorReset }
@@ -63,7 +63,6 @@ const SettingScreen = ({ navigation }) => {
   const handleResetPassword = async values => {
     console.log('handleResetPassword values', values)
     try {
-      setToggleSnackbar(true)
       const input = {
         OldPassword: values.OldPassword,
         NewPassword: values.NewPassword
@@ -77,10 +76,11 @@ const SettingScreen = ({ navigation }) => {
       if (code === 200) {
         const logged = await dispatch(loginAsync(token, contact))
         console.log('SettingScreen logged', logged)
-        if (logged) setToggleSnackbar(false)
-      }
+        if (logged) navigation.navigate('Feed')
+      } else setToggleSnackbar('There is some errors!')
     } catch (e) {
       console.log('handleResetPassword e', e)
+      setToggleSnackbar('Unknown Error!')
     }
   }
 
@@ -176,13 +176,14 @@ const SettingScreen = ({ navigation }) => {
         )}
       </Formik>
       <Snackbar
+        duration={5000}
         visible={toggleSnackbar}
-        onDismiss={() => setToggleSnackbar(!toggleSnackbar)}
+        onDismiss={() => setToggleSnackbar('')}
         action={{
           label: 'Done',
-          onPress: () => setToggleSnackbar(!toggleSnackbar)
+          onPress: () => setToggleSnackbar('')
         }}>
-        Password updated!
+        {toggleSnackbar || 'Password updated!'}
       </Snackbar>
     </Container>
   )
