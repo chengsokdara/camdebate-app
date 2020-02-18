@@ -1,3 +1,14 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink, createHttpLink } from 'apollo-link-http'
@@ -6,10 +17,10 @@ import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import AsyncStorage from '@react-native-community/async-storage'
 
-import { GRAPHQL_LOCAL_TEST_SERVER } from '../resources'
+import { GRAPHQL_SERVER_ENDPOINT } from '../resources'
 
 const httpLink = createHttpLink({
-  uri: GRAPHQL_LOCAL_TEST_SERVER,
+  uri: GRAPHQL_SERVER_ENDPOINT,
   credentials: 'include'
 })
 

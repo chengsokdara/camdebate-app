@@ -1,22 +1,47 @@
-import React from 'react'
-import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
+import React, { useEffect } from 'react'
 import styled from 'styled-components/native'
 import { ScrollView } from 'react-native'
 import { DrawerItems } from 'react-navigation-drawer'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+//import { useLazyQuery } from '@apollo/react-hooks'
 
 import { primaryColor } from '../../resources'
+//import { ProfileQuery } from '../../resources/queries'
 import { logoutAsync } from '../../service'
 
 const Drawer = props => {
-  const { navigation } = props
   const dispatch = useDispatch()
-  const { token } = useSelector(state => state.auth, shallowEqual)
+  const { navigation } = props
+  const { token, profile } = useSelector(state => state.auth, shallowEqual)
+  /* const [getProfile, { called, data, error, loading }] = useLazyQuery(
+    ProfileQuery
+  ) */
+
+  //if (loading) console.log('Loading...')
+  //if (error) console.log('Error', error)
+
+  console.log('ProfileScreen profile', profile)
 
   const handleLogoutPress = async () => {
-    const logoutToken = await dispatch(logoutAsync())
-    console.log('Logged out token', token)
-    if (!logoutToken) navigation.navigate('AuthLoading')
+    const loggedOut = await dispatch(logoutAsync())
+    console.log('Logged out', !loggedOut)
+    if (!loggedOut) navigation.navigate('AuthLoading')
   }
+
+  /* useEffect(() => {
+    if (!called && token) getProfile()
+  }, [token]) */
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -27,11 +52,23 @@ const Drawer = props => {
               <Avatar
                 source={require('../../resources/images/camdebate_white_logo.png')}
               />
-              <UserInfoContainer>
-                <TextName>Mr. Sokdara</TextName>
-                <Text>086558716</Text>
-                <Text>chengsokdara@gmail.com</Text>
-              </UserInfoContainer>
+              {profile ? (
+                <UserInfoContainer>
+                  <TextName>
+                    {`${profile.Title}. ${profile.GivenName}`}
+                  </TextName>
+                  <Text>{profile.Phone}</Text>
+                  {profile.WorkPlace ? <Text>{profile.WorkPlace}</Text> : null}
+                </UserInfoContainer>
+              ) : (
+                <UserInfoContainer>
+                  <TextName>
+                    {`${profile.Title}. ${profile.GivenName}`}
+                  </TextName>
+                  <Text>{profile.Phone}</Text>
+                  {<Text>{profile.WorkPlace}</Text>}
+                </UserInfoContainer>
+              )}
             </Header>
           ) : (
             <Header>

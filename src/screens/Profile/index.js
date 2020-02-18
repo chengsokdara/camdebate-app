@@ -1,19 +1,34 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components/native'
 import ImagePicker from 'react-native-image-picker'
+import moment from 'moment'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
   Avatar,
   Button,
   Card as PaperCard,
+  HelperText,
   Snackbar,
   TextInput,
   TouchableRipple
 } from 'react-native-paper'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+import { useMutation } from '@apollo/react-hooks'
 import { Formik } from 'formik'
 import { object, string } from 'yup'
 
+import { AppBar, DatePicker, Picker, Radio } from '../../components'
 import { primaryColor } from '../../resources'
 import {
   GenderRadioItems,
@@ -22,39 +37,71 @@ import {
 } from '../../resources/mocks'
 import { UpdateProfileMutation } from '../../resources/mutations'
 import { ProfileQuery } from '../../resources/queries'
-import { AppBar, DatePicker, Picker, Radio } from '../../components'
+import { setProfileAsync } from '../../service'
 
-const ProfileSchema = object().shape({})
+const ProfileSchema = object().shape({
+  Title: string().required(),
+  GivenName: string().required(),
+  FamilyName: string().required(),
+  Sex: string().required(),
+  Nationality: string().required(),
+  DOB: string().required(),
+  Phone: string().required(),
+  Email: string().required(),
+  WorkPlace: string().required()
+})
 
 const ProfileScreen = ({ navigation }) => {
+  const dispatch = useDispatch()
   const [toggleSnackbar, setToggleSnackbar] = useState(false)
   const [photoUri, setPhotoUri] = useState(undefined)
   const [
     updateProfile,
     { data: updateData, error: updateError, loading: updateLoading }
   ] = useMutation(UpdateProfileMutation)
-  const { data, error, loading } = useQuery(ProfileQuery)
+  const { profile } = useSelector(state => state.auth, shallowEqual)
+  //const { data, error, loading } = useQuery(ProfileQuery)
 
-  if (loading) console.log('Loading...')
-  if (error) console.log('Error', error)
+  //if (loading) console.log('Loading...')
+  //if (error) console.log('Error', error)
 
-  console.log('ProfileScreen data', data)
+  const InitialValues = {
+    Title: profile ? profile.Title : '',
+    GivenName: profile ? profile.GivenName : '',
+    FamilyName: profile ? profile.FamilyName : '',
+    Sex: profile ? profile.Sex : '',
+    Nationality: profile ? profile.Nationality : '',
+    DOB: profile ? moment(profile.DOB).format('YYYY-MM-DD') : '',
+    Phone: profile ? profile.Phone : '',
+    GuardianPhone: profile ? profile.GuardianPhone : '',
+    Email: profile ? profile.Email : '',
+    Address: profile ? profile.Address : '',
+    School: profile ? profile.School : '',
+    WorkPlace: profile ? profile.WorkPlace : ''
+  }
+
+  console.log('ProfileScreen profile', profile)
   console.log('ProfileScreen photoUri', photoUri)
 
   const handleUpdateProfile = async values => {
-    //console.log('handleUpdateProfile values', values)
+    console.log('handleUpdateProfile values', values)
     try {
       setToggleSnackbar(true)
       const res = await updateProfile({
         variables: {
           input: values
-        }
+        },
+        refetchQueries: [{ query: ProfileQuery }],
+        awaitRefetchQueries: true
       })
       console.log('handleUpdateProfile response', res)
-      const { code } = res.data.updateProfile
-      if (code === 200) setToggleSnackbar(false)
+      const { code, contact } = res.data.updateProfile
+      if (code === 200) {
+        await dispatch(setProfileAsync(contact))
+        setToggleSnackbar(false)
+      }
     } catch (e) {
-      console.log('updateProfile e', e)
+      console.log('updateProfile error', e)
     }
   }
 
@@ -106,24 +153,24 @@ const ProfileScreen = ({ navigation }) => {
               <Column>
                 <Button
                   mode="contained"
-                  contentStyle={{ width: 160, height: 48 }}
+                  contentStyle={{ height: 48 }}
                   onPress={() =>
                     ImagePicker.launchImageLibrary({}, response => {
                       console.log('Response', response)
                       setPhotoUri(response.path)
                     })
                   }>
-                  Browse photo
+                  Browse
                 </Button>
                 <Button
                   color="red"
                   mode="contained"
-                  contentStyle={{ width: 160, height: 48 }}
+                  contentStyle={{ height: 48 }}
                   onPress={() => {
                     console.log('Remove image.')
                     setPhotoUri(undefined)
                   }}>
-                  Remove photo
+                  Remove
                 </Button>
               </Column>
             </Row>
@@ -131,20 +178,18 @@ const ProfileScreen = ({ navigation }) => {
         </Card>
         <Formik
           enableReinitialize
-          initialValues={{
-            Title: data ? data.profile.contact.Title : '',
-            GivenName: data ? data.profile.contact.GivenName : '',
-            FamilyName: data ? data.profile.contact.FamilyName : '',
-            Sex: data ? data.profile.contact.Sex : '',
-            Nationality: data ? data.profile.contact.Nationality : '',
-            DOB: data ? data.profile.contact.DOB : '',
-            Phone: data ? data.profile.contact.Phone : '',
-            Email: data ? data.profile.contact.Email : '',
-            WorkPlace: data ? data.profile.contact.WorkPlace : ''
-          }}
+          initialValues={InitialValues}
           validationSchema={ProfileSchema}
           onSubmit={handleUpdateProfile}>
-          {({ handleChange, handleBlur, handleSubmit, errors, values }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            dirty,
+            errors,
+            touched,
+            values
+          }) => (
             <>
               <Card>
                 <Card.Title title="Your Details" />
@@ -155,6 +200,11 @@ const ProfileScreen = ({ navigation }) => {
                     value={values.Title}
                     onChangeValue={handleChange('Title')}
                   />
+                  {touched.Title && errors.Title ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Title}
+                    </HelperText>
+                  ) : null}
                   <TextInputMargined
                     label="Given Name"
                     mode="outlined"
@@ -162,6 +212,11 @@ const ProfileScreen = ({ navigation }) => {
                     onChangeText={handleChange('GivenName')}
                     onBlur={handleBlur('GivenName')}
                   />
+                  {touched.GivenName && errors.GivenName ? (
+                    <HelperText padding="none" type="error">
+                      {errors.GivenName}
+                    </HelperText>
+                  ) : null}
                   <TextInputMargined
                     label="Family Name"
                     mode="outlined"
@@ -169,6 +224,11 @@ const ProfileScreen = ({ navigation }) => {
                     onChangeText={handleChange('FamilyName')}
                     onBlur={handleBlur('FamilyName')}
                   />
+                  {touched.FamilyName && errors.FamilyName ? (
+                    <HelperText padding="none" type="error">
+                      {errors.FamilyName}
+                    </HelperText>
+                  ) : null}
                   <Radio
                     color={primaryColor}
                     items={GenderRadioItems}
@@ -178,17 +238,32 @@ const ProfileScreen = ({ navigation }) => {
                     style={{ marginBottom: 10 }}
                     onChangeValue={handleChange('Sex')}
                   />
+                  {touched.Sex && errors.Sex ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Sex}
+                    </HelperText>
+                  ) : null}
                   <PickerMargined
                     items={NationalityItems}
                     label="Select Nationality"
                     value={values.Nationality}
                     onChangeValue={handleChange('Nationality')}
                   />
+                  {touched.Nationality && errors.Nationality ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Nationality}
+                    </HelperText>
+                  ) : null}
                   <DatePicker
                     value={values.DOB}
                     style={{ marginBottom: 10 }}
                     onChangeValue={handleChange('DOB')}
                   />
+                  {touched.DOB && errors.DOB ? (
+                    <HelperText padding="none" type="error">
+                      {errors.DOB}
+                    </HelperText>
+                  ) : null}
                   <TextInputMargined
                     label="Personal Phone"
                     mode="outlined"
@@ -196,7 +271,23 @@ const ProfileScreen = ({ navigation }) => {
                     onChangeText={handleChange('Phone')}
                     onBlur={handleBlur('Phone')}
                   />
-                  {/* <TextInputMargined label="Working/Guardian Phone" mode="outlined" /> */}
+                  {touched.Phone && errors.Phone ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Phone}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    label="Working/Guardian Phone"
+                    mode="outlined"
+                    value={values.GuardianPhone}
+                    onChangeText={handleChange('GuardianPhone')}
+                    onBlur={handleBlur('GuardianPhone')}
+                  />
+                  {touched.GuardianPhone && errors.GuardianPhone ? (
+                    <HelperText padding="none" type="error">
+                      {errors.GuardianPhone}
+                    </HelperText>
+                  ) : null}
                   <TextInputMargined
                     label="E-Mail"
                     mode="outlined"
@@ -204,8 +295,35 @@ const ProfileScreen = ({ navigation }) => {
                     onChangeText={handleChange('Email')}
                     onBlur={handleBlur('Email')}
                   />
-                  {/* <TextInputMargined label="Current Address" mode="outlined" /> */}
-                  {/* <TextInputMargined label="Name of Your School" mode="outlined" /> */}
+                  {touched.Email && errors.Email ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Email}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    label="Current Address"
+                    mode="outlined"
+                    value={values.Address}
+                    onChangeText={handleChange('Address')}
+                    onBlur={handleBlur('Address')}
+                  />
+                  {touched.Address && errors.Address ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Address}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    label="Name of Your School"
+                    mode="outlined"
+                    value={values.School}
+                    onChangeText={handleChange('School')}
+                    onBlur={handleBlur('School')}
+                  />
+                  {touched.School && errors.School ? (
+                    <HelperText padding="none" type="error">
+                      {errors.School}
+                    </HelperText>
+                  ) : null}
                   <TextInput
                     label="Workplace"
                     mode="outlined"
@@ -213,14 +331,24 @@ const ProfileScreen = ({ navigation }) => {
                     onChangeText={handleChange('WorkPlace')}
                     onBlur={handleBlur('WorkPlace')}
                   />
+                  {touched.WorkPlace && errors.WorkPlace ? (
+                    <HelperText padding="none" type="error">
+                      {errors.WorkPlace}
+                    </HelperText>
+                  ) : null}
                 </Card.Content>
               </Card>
+              {updateError ? (
+                <HelperText padding="none" type="error">
+                  {updateError.message}
+                </HelperText>
+              ) : null}
               <Button
                 disabled={updateLoading}
                 loading={updateLoading}
                 mode="contained"
                 contentStyle={{ width: '100%', height: 50 }}
-                onPress={handleSubmit}>
+                onPress={e => dirty && handleSubmit(e)}>
                 Save
               </Button>
             </>
@@ -258,8 +386,9 @@ const Card = styled(PaperCard)`
 const Column = styled.View`
   flex: 1;
   align-self: stretch;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-evenly;
+  padding-left: 20px;
 `
 
 const Content = styled(KeyboardAwareScrollView)``

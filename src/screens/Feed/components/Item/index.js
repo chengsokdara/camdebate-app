@@ -1,3 +1,14 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React from 'react'
 import styled from 'styled-components/native'
 import { Button, Card as PaperCard, List } from 'react-native-paper'
@@ -25,12 +36,12 @@ const FeedItem = ({ item, last, navigation }) => {
   //console.log('TableDataJson', TableDataJson)
 
   const renderNote = (Note, NoteUrl) => {
-    console.log('Note', Note)
+    //console.log('Note', Note)
     if (Note.includes('{{') && Note.includes('}}')) {
       const start = Note.lastIndexOf('{{')
       const end = Note.lastIndexOf('}}')
       const buttonLabel = Note.substring(start + 2, end)
-      console.log('buttonLabel', buttonLabel)
+      //console.log('buttonLabel', buttonLabel)
       return (
         <>
           <CardMessage>{Note.substring(0, start - 1)}</CardMessage>
@@ -52,7 +63,7 @@ const FeedItem = ({ item, last, navigation }) => {
       const startNote = Note.substring(0, start)
       const endNote = Note.substring(end + 1, Note.length)
       const buttonLabel = Note.substring(start + 1, end)
-      console.log('buttonLabel', buttonLabel)
+      //console.log('buttonLabel', buttonLabel)
       return (
         <CardMessage>
           {startNote || ''}

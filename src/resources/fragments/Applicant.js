@@ -11,50 +11,60 @@
  */
 import gql from 'graphql-tag'
 
-export const ContactFragment = gql`
-  fragment ContactFragment on ContactResponse {
+export const ApplicantFragment = gql`
+  fragment ApplicantFragment on ApplicantResponse {
     code
     success
     message
-    contact {
+    applicant {
+      ApplicantID
       ContactID
+      Level
+      Category
       Title
       GivenName
       FamilyName
       Sex
+      TshirtSize
       Nationality
       DOB
       Phone
       Email
-      WorkPlace
-      GuardianPhone
       Address
-      School
-      Country
+      CityProvince
+      University
+      EnglishSchool
+      GuardianPhone
+      Paid
     }
   }
 `
 
-export const ContactsFragment = gql`
-  fragment ContactsFragment on ContactsResponse {
+export const ApplicantsFragment = gql`
+  fragment ApplicantsFragment on ApplicantsResponse {
     code
     success
     message
-    contacts {
+    applicants {
+      ApplicantID
       ContactID
+      Level
+      Category
       Title
       GivenName
       FamilyName
       Sex
+      TshirtSize
       Nationality
       DOB
       Phone
       Email
-      WorkPlace
-      GuardianPhone
       Address
-      School
-      Country
+      CityProvince
+      University
+      EnglishSchool
+      GuardianPhone
+      Paid
     }
   }
 `

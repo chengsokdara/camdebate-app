@@ -1,3 +1,14 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components/native'
 import {
@@ -62,9 +73,9 @@ const SettingScreen = ({ navigation }) => {
           input
         }
       })
-      const { code, token } = res.data.resetPassword
+      const { code, token, contact } = res.data.resetPassword
       if (code === 200) {
-        const logged = await dispatch(loginAsync(token))
+        const logged = await dispatch(loginAsync(token, contact))
         console.log('SettingScreen logged', logged)
         if (logged) setToggleSnackbar(false)
       }
@@ -88,7 +99,14 @@ const SettingScreen = ({ navigation }) => {
         }}
         validationSchema={ResetPasswordSchema}
         onSubmit={handleResetPassword}>
-        {({ handleChange, handleBlur, handleSubmit, errors, values }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          errors,
+          touched,
+          values
+        }) => (
           <Content>
             <Card>
               <Card.Title title="Reset Password" />
@@ -104,7 +122,7 @@ const SettingScreen = ({ navigation }) => {
                   onBlur={handleBlur('OldPassword')}
                   onSubmitEditing={() => refNewPassword.current.focus()}
                 />
-                {errors.OldPassword ? (
+                {touched.OldPassword && errors.OldPassword ? (
                   <HelperText padding="none" type="error">
                     {errors.OldPassword}
                   </HelperText>
@@ -121,7 +139,7 @@ const SettingScreen = ({ navigation }) => {
                   onBlur={handleBlur('OldPassword')}
                   onSubmitEditing={() => refConfirmPassword.current.focus()}
                 />
-                {errors.NewPassword ? (
+                {touched.NewPassword && errors.NewPassword ? (
                   <HelperText padding="none" type="error">
                     {errors.NewPassword}
                   </HelperText>
@@ -137,7 +155,7 @@ const SettingScreen = ({ navigation }) => {
                   onChangeText={handleChange('ConfirmPassword')}
                   onBlur={handleBlur('ConfirmPassword')}
                 />
-                {errors.ConfirmPassword ? (
+                {touched.ConfirmPassword && errors.ConfirmPassword ? (
                   <HelperText padding="none" type="error">
                     {errors.ConfirmPassword}
                   </HelperText>

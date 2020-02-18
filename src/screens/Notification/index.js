@@ -1,3 +1,14 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React from 'react'
 import styled from 'styled-components/native'
 import { FlatList } from 'react-native'
@@ -17,7 +28,7 @@ const NotificationScreen = ({ navigation }) => {
       <AppBar
         backable
         title="Notifications"
-        onBackPress={() => navigation.navigate('News')}
+        onBackPress={() => navigation.navigate('Feed')}
       />
       <Content>
         <FlatList

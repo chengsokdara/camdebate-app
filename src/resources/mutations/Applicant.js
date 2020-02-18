@@ -10,13 +10,13 @@
  * Created At: 03/02/2020
  */
 import gql from 'graphql-tag'
-import { FeedFragment, FeedsFragment } from '../fragments'
+import { ApplicantFragment } from '../fragments'
 
-export const FeedsQuery = gql`
-  query FeedsQuery {
-    feeds {
-      ...FeedsFragment
+export const CreateApplicantMutation = gql`
+  mutation CreateApplicant($input: ApplicantInput!) {
+    createApplicant(input: $input) {
+      ...ApplicantFragment
     }
   }
-  ${FeedsFragment}
+  ${ApplicantFragment}
 `

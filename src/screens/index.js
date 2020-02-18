@@ -1,3 +1,14 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React from 'react'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -5,25 +16,17 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { createStackNavigator } from 'react-navigation-stack'
 
 import { Drawer, NavIcon } from '../components'
-import {
-  AppDrawerRouteName,
-  AppRouteName,
-  AuthDrawerRouteName,
-  AuthRouteName,
-  MainRouteName,
-  lightPrimaryColor,
-  primaryColor
-} from '../resources'
+import { lightPrimaryColor, primaryColor } from '../resources'
+import ApplicationScreen from './Application'
 import ContactScreen from './Contact'
 import FaqScreen from './Faq'
-import ForgotPasswordScreen from './Forgot'
-import LoadingScreen from './Loading'
-import MainScreen from './Main'
 import FeedScreen from './Feed'
+import ForgotPasswordScreen from './Forgot'
+import MainScreen from './Main'
 import NotificationScreen from './Notification'
 import NotificationDetailScreen from './Notification/detail'
+import PaymentScreen from './Payment'
 import ProfileScreen from './Profile'
-import RegisterScreen from './Register'
 import ScheduleScreen from './Schedule'
 import SettingScreen from './Setting'
 import SigninScreen from './Signin'
@@ -33,13 +36,19 @@ import TestScreen from './Test'
 import WebScreen from './Web'
 //import WelcomeScreen from './Welcome'
 
-const NotificationNavigator = createStackNavigator(
+const MainRouteName = 'AuthLoading' // options: App | Auth | AuthLoading | Test
+const AuthRouteName = 'Feed'
+const AuthDrawerRouteName = 'Feed'
+const AppRouteName = 'Feed'
+const AppDrawerRouteName = 'Feed'
+
+const ApplicationNavigator = createStackNavigator(
   {
-    List: NotificationScreen,
-    Detail: NotificationDetailScreen
+    Application: ApplicationScreen,
+    Payment: PaymentScreen
   },
   {
-    initialRouteName: 'List',
+    initialRouteName: 'Application',
     headerMode: 'none'
   }
 )
@@ -55,10 +64,21 @@ const FeedNavigator = createStackNavigator(
   }
 )
 
+const NotificationNavigator = createStackNavigator(
+  {
+    List: NotificationScreen,
+    Detail: NotificationDetailScreen
+  },
+  {
+    initialRouteName: 'List',
+    headerMode: 'none'
+  }
+)
+
 const BottomNavigator = createMaterialBottomTabNavigator(
   {
     Menu: {
-      screen: MainScreen,
+      screen: () => null,
       navigationOptions: {
         tabBarOnPress: ({ navigation: { toggleDrawer } }) => toggleDrawer(),
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
@@ -70,10 +90,10 @@ const BottomNavigator = createMaterialBottomTabNavigator(
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="home" />
       }
     },
-    Registration: {
-      screen: RegisterScreen,
+    Application: {
+      screen: ApplicationNavigator,
       navigationOptions: {
-        tabBarLabel: 'Register',
+        tabBarLabel: 'Application',
         tabBarIcon: ({ focused }) => (
           <NavIcon focused={focused} name="file-document-edit" />
         )
@@ -110,12 +130,15 @@ const BottomNavigator = createMaterialBottomTabNavigator(
 const DrawerNavigator = createDrawerNavigator(
   {
     Feed: BottomNavigator,
-    Notification: NotificationNavigator,
     Setting: SettingScreen,
     Contact: ContactScreen,
     Faq: FaqScreen,
     Term: TermScreen,
-    Logout: () => <></>
+    Notification: {
+      screen: NotificationNavigator,
+      navigationOptions: { drawerLabel: () => null }
+    },
+    Logout: () => null
   },
   {
     initialRouteName: AppDrawerRouteName,
@@ -147,7 +170,7 @@ const AuthLoginNavigator = createStackNavigator(
 const AuthBottomNavigator = createMaterialBottomTabNavigator(
   {
     Menu: {
-      screen: MainScreen,
+      screen: () => null,
       navigationOptions: {
         tabBarOnPress: ({ navigation: { toggleDrawer } }) => toggleDrawer(),
         tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
@@ -202,7 +225,7 @@ const AuthDrawerNavigator = createDrawerNavigator(
 const AppNavigator = createSwitchNavigator(
   {
     Auth: AuthDrawerNavigator,
-    AuthLoading: LoadingScreen,
+    AuthLoading: MainScreen,
     App: DrawerNavigator,
     Test: TestScreen
   },

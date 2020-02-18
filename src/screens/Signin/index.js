@@ -1,4 +1,16 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import React, { useRef, useState } from 'react'
+import AsyncStorage from '@react-native-community/async-storage'
 import styled from 'styled-components/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
@@ -52,15 +64,18 @@ const SigninScreen = ({ navigation }) => {
 
   const handleLogin = async values => {
     console.log('handleLogin values', values)
+    const playerJson = await AsyncStorage.getItem('player')
+    const player = await JSON.parse(playerJson)
+    if (player) values.PlayerID = player.ID
     try {
       const res = await login({
         variables: {
           input: values
         }
       })
-      const { code, token } = res.data.login
+      const { code, token, contact } = res.data.login
       if (code === 200) {
-        const logged = await dispatch(loginAsync(token))
+        const logged = await dispatch(loginAsync(token, contact))
         console.log('SigninScreen logged', logged)
         if (logged) navigation.navigate('App')
       }
@@ -79,7 +94,14 @@ const SigninScreen = ({ navigation }) => {
           signinBy === 'Phone' ? SigninSchemaPhone : SigninSchemaEmail
         }
         onSubmit={handleLogin}>
-        {({ handleChange, handleBlur, handleSubmit, errors, values }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          errors,
+          touched,
+          values
+        }) => (
           <Content
             contentContainerStyle={{
               flexGrow: 1,
@@ -104,7 +126,7 @@ const SigninScreen = ({ navigation }) => {
                   onBlur={handleBlur('Phone')}
                   onSubmitEditing={() => refPassword.current.focus()}
                 />
-                {errors.Phone ? (
+                {touched.Phone && errors.Phone ? (
                   <HelperText padding="none" type="error">
                     {errors.Phone}
                   </HelperText>
@@ -123,7 +145,7 @@ const SigninScreen = ({ navigation }) => {
                 />
                 {(data && data.login && data.login.code === 401) ||
                 error ||
-                errors.Password ? (
+                (touched.Password && errors.Password) ? (
                   <HelperText padding="none" type="error">
                     {(data && data.login && data.login.message) ||
                       (error && error.message) ||

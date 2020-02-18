@@ -1,5 +1,25 @@
+/**
+ * Author: Mr. Cheng Sokdara
+ * Repository: https://github.com/chengsokdara/camdebate-app
+ *
+ * Email: chengsokdara@gmail.com
+ * Phone: 086558716
+ * Website: https://rawewhat-team.web.app
+ * License: MIT
+ *
+ * Created At: 03/02/2020
+ */
 import gql from 'graphql-tag'
-import { ContactFragment } from '../fragments'
+import { AuthFragment, ContactFragment, PlayerFragment } from '../fragments'
+
+export const InitAppMutation = gql`
+  mutation InitApp($input: InitAppInput!) {
+    initApp(input: $input) {
+      ...PlayerFragment
+    }
+  }
+  ${PlayerFragment}
+`
 
 export const LoginMutation = gql`
   mutation Login($input: LoginInput!) {
@@ -8,8 +28,12 @@ export const LoginMutation = gql`
       success
       message
       token
+      contact {
+        ...AuthFragment
+      }
     }
   }
+  ${AuthFragment}
 `
 
 export const RegisterMutation = gql`
@@ -20,17 +44,11 @@ export const RegisterMutation = gql`
       message
       token
       contact {
-        ContactID
-        Phone
-        Title
-        GivenName
-        FamilyName
-        Nationality
-        Country
-        Email
+        ...AuthFragment
       }
     }
   }
+  ${AuthFragment}
 `
 
 export const ResetPasswordMutation = gql`
@@ -40,8 +58,12 @@ export const ResetPasswordMutation = gql`
       success
       message
       token
+      contact {
+        ...AuthFragment
+      }
     }
   }
+  ${AuthFragment}
 `
 
 export const UpdateProfileMutation = gql`
@@ -52,3 +74,6 @@ export const UpdateProfileMutation = gql`
   }
   ${ContactFragment}
 `
+
+export * from './Applicant'
+export * from './Player'
