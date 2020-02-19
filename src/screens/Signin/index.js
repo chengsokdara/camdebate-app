@@ -36,7 +36,7 @@ const InitialValues = {
 
 const SigninSchemaPhone = object().shape({
   Phone: string()
-    .min(7, 'Phone number must be at least 9 characters.')
+    .min(9, 'Phone number must be at least 9 characters.')
     .max(15, 'Phone number length is too long.')
     .matches(
       /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
@@ -86,7 +86,7 @@ const SigninScreen = ({ navigation }) => {
         const logged = await dispatch(loginAsync(token, contact))
         console.log('SigninScreen logged', logged)
         if (logged) navigation.navigate('App')
-      } else setToggleSnackbar('There is some errors!')
+      } else setToggleSnackbar('There are some errors!')
     } catch (e) {
       console.log('handleLogin e', e)
       setToggleSnackbar('Unknown Error!')

@@ -21,6 +21,7 @@ import {
   HelperText,
   TextInput
 } from 'react-native-paper'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { Formik } from 'formik'
 import { object, string } from 'yup'
@@ -66,45 +67,88 @@ const ApplicationSchema = object().shape({
     'Competitoin category is a required field.'
   ),
   Title: string().required('Title is a required field.'),
-  GivenName: string().required('Given name is a required field.'),
-  FamilyName: string().required('Family name is a required field.'),
+  GivenName: string()
+    .min(2, 'Given name must be at least 2 characters.')
+    .max(50, 'Given name length is too long.')
+    .required('Given name is a required field.'),
+  FamilyName: string()
+    .min(2, 'Family name must be at least 2 characters.')
+    .max(50, 'Family name length is too long.')
+    .required('Family name is a required field.'),
   Sex: string().required('Gender is a required field.'),
   TshirtSize: string().required('T-Shirt size is a required field.'),
   Nationality: string().required('Nationality is a required field.'),
   DOB: string().required('Date of birth is a required field.'),
-  Phone: string().required('Mobile phone is a required field'),
-  Email: string().required('Email is a required field.'),
-  Address: string().required('Residential address is a required field.'),
+  Phone: string()
+    .min(9, 'Phone number must be at least 9 characters.')
+    .max(15, 'Phone number length is too long.')
+    .matches(
+      /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
+      'Phone number is not valid.'
+    )
+    .required('Mobile phone is a required field'),
+  Email: string()
+    .min(7, 'Email must be at least 7 characters.')
+    .max(50, 'Email length is too long.')
+    .email('Email is not valid.')
+    .required('Email is a required field.'),
+  Address: string()
+    .min(5, 'Address must be at least 5 characters.')
+    .max(100, 'Address length is too long.')
+    .required('Residential address is a required field.'),
   CityProvince: string().required('City/Province is a required field.'),
   HighSchool: string().when('CompetitionLevel', {
     is: 'High School',
-    then: string().required('High school is a required field.')
+    then: string()
+      .min(3, 'High school must be at least 3 characters.')
+      .max(50, 'High school length is too long')
+      .required('High school is a required field.')
   }),
   University: string()
     .when('CompetitionLevel', {
       is: 'University',
-      then: string().required('University is a required field.')
+      then: string()
+        .min(3, 'University must be at least 3 characters.')
+        .max(50, 'University length is too long')
+        .required('University is a required field.')
     })
     .when('CompetitionLevel', {
       is: 'Young Professionals',
-      then: string().required('University is a required field.')
+      then: string()
+        .min(3, 'University must be at least 3 characters.')
+        .max(50, 'University length is too long')
+        .required('University is a required field.')
     }),
   EnglishSchool: string()
     .when('CompetitionLevel', {
       is: 'High School',
-      then: string().required('English school is a required field.')
+      then: string()
+        .min(3, 'English school must be at least 3 characters.')
+        .max(50, 'English school length is too long')
+        .required('English school is a required field.')
     })
     .when('CompetitionLevel', {
       is: 'University',
-      then: string().required('English school is a required field.')
+      then: string()
+        .min(3, 'English school must be at least 3 characters.')
+        .max(50, 'English school length is too long')
+        .required('English school is a required field.')
     }),
   WorkPlace: string().when('CompetitionLevel', {
     is: 'Young Professionals',
-    then: string().required('Work place is a required field')
+    then: string()
+      .min(3, 'Work place must be at least 3 characters.')
+      .max(50, 'Work place length is too long')
+      .required('Work place is a required field')
   }),
-  GuardianPhone: string().required(
-    'Emergency/Guardian phone is a required field.'
-  )
+  GuardianPhone: string()
+    .min(9, 'Guardian phone number must be at least 9 characters.')
+    .max(15, 'Guardian phone number length is too long.')
+    .matches(
+      /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
+      'Emergency/Guardian phone number is not valid.'
+    )
+    .required('Emergency/Guardian phone number is a required field.')
 })
 
 const ApplicationScreen = ({ navigation }) => {
@@ -207,7 +251,7 @@ const ApplicationScreen = ({ navigation }) => {
           </HelperText>
         ) : null}
       </>
-    ) : (
+    ) : level === 'High School' ? (
       <>
         <TextInputMargined
           ref={refHighSchool}
@@ -238,7 +282,7 @@ const ApplicationScreen = ({ navigation }) => {
           </HelperText>
         ) : null}
       </>
-    )
+    ) : null
   }
 
   return (
@@ -259,10 +303,9 @@ const ApplicationScreen = ({ navigation }) => {
           validationSchema={ApplicationSchema}
           onSubmit={handleRegistration}>
           {({
-            handleChange,
             handleBlur,
+            handleChange,
             handleSubmit,
-            setFieldValue,
             setValues,
             errors,
             touched,
@@ -318,17 +361,6 @@ const ApplicationScreen = ({ navigation }) => {
                       {errors.CompetitionCategory}
                     </HelperText>
                   ) : null}
-                  <PickerMargined
-                    items={TitleItems}
-                    label="Select Title"
-                    value={values.Title}
-                    onChangeValue={handleChange('Title')}
-                  />
-                  {touched.Title && errors.Title ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Title}
-                    </HelperText>
-                  ) : null}
                   <TextInputMargined
                     autoCompleteType="name"
                     label="Given Name"
@@ -360,50 +392,7 @@ const ApplicationScreen = ({ navigation }) => {
                       {errors.FamilyName}
                     </HelperText>
                   ) : null}
-                  {/* Add Gender */}
-                  <PickerMargined
-                    items={GenderItems}
-                    label="Select Gender"
-                    value={values.Sex}
-                    onChangeValue={handleChange('Sex')}
-                  />
-                  {touched.Sex && errors.Sex ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Sex}
-                    </HelperText>
-                  ) : null}
-                  <PickerMargined
-                    items={TeeShirtSizeItems}
-                    label="Select Tshirt Size"
-                    values={values.TshirtSize}
-                    onChangeValue={handleChange('TshirtSize')}
-                  />
-                  {touched.TshirtSize && errors.TshirtSize ? (
-                    <HelperText padding="none" type="error">
-                      {errors.TshirtSize}
-                    </HelperText>
-                  ) : null}
-                  <PickerMargined
-                    items={NationalityItems}
-                    label="Select Nationality"
-                    value={values.Nationality}
-                    onChangeValue={handleChange('Nationality')}
-                  />
-                  {touched.Nationality && errors.Nationality ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Nationality}
-                    </HelperText>
-                  ) : null}
-                  <DatePicker
-                    value={values.DOB}
-                    style={{ marginBottom: 10 }}
-                    onChangeValue={handleChange('DOB')}
-                  />
-                  {touched.DOB && errors.DOB ? (
-                    <HelperText padding="none" type="error">
-                      {errors.DOB}
-                    </HelperText>
-                  ) : null}
+
                   <TextInputMargined
                     ref={refPhone}
                     autoCompleteType="tel"
@@ -419,6 +408,19 @@ const ApplicationScreen = ({ navigation }) => {
                   {touched.Phone && errors.Phone ? (
                     <HelperText padding="none" type="error">
                       {errors.Phone}
+                    </HelperText>
+                  ) : null}
+                  <TextInputMargined
+                    ref={refGuardianPhone}
+                    label="Emergency/Guardian Phone"
+                    mode="outlined"
+                    value={values.GuardianPhone}
+                    onChangeText={handleChange('GuardianPhone')}
+                    onBlur={handleBlur('GuardianPhone')}
+                  />
+                  {touched.GuardianPhone && errors.GuardianPhone ? (
+                    <HelperText padding="none" type="error">
+                      {errors.GuardianPhone}
                     </HelperText>
                   ) : null}
                   <TextInputMargined
@@ -456,7 +458,68 @@ const ApplicationScreen = ({ navigation }) => {
                       {errors.Address}
                     </HelperText>
                   ) : null}
+                  {renderBaseOnLevel({
+                    handleChange,
+                    handleBlur,
+                    errors,
+                    touched,
+                    values
+                  })}
                   <PickerMargined
+                    items={TitleItems}
+                    label="Select Title"
+                    value={values.Title}
+                    onChangeValue={handleChange('Title')}
+                  />
+                  {touched.Title && errors.Title ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Title}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={GenderItems}
+                    label="Select Gender"
+                    value={values.Sex}
+                    onChangeValue={handleChange('Sex')}
+                  />
+                  {touched.Sex && errors.Sex ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Sex}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={NationalityItems}
+                    label="Select Nationality"
+                    value={values.Nationality}
+                    onChangeValue={handleChange('Nationality')}
+                  />
+                  {touched.Nationality && errors.Nationality ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Nationality}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={TeeShirtSizeItems}
+                    label="Select Tshirt Size"
+                    values={values.TshirtSize}
+                    onChangeValue={handleChange('TshirtSize')}
+                  />
+                  {touched.TshirtSize && errors.TshirtSize ? (
+                    <HelperText padding="none" type="error">
+                      {errors.TshirtSize}
+                    </HelperText>
+                  ) : null}
+                  <DatePicker
+                    value={values.DOB}
+                    style={{ marginBottom: 10 }}
+                    onChangeValue={handleChange('DOB')}
+                  />
+                  {touched.DOB && errors.DOB ? (
+                    <HelperText padding="none" type="error">
+                      {errors.DOB}
+                    </HelperText>
+                  ) : null}
+                  <Picker
                     items={CityProvinceItems}
                     label="Select City/Province"
                     value={values.CityProvince}
@@ -467,26 +530,6 @@ const ApplicationScreen = ({ navigation }) => {
                       {errors.CityProvince}
                     </HelperText>
                   ) : null}
-                  {renderBaseOnLevel({
-                    handleChange,
-                    handleBlur,
-                    errors,
-                    touched,
-                    values
-                  })}
-                  <TextInputMargined
-                    ref={refGuardianPhone}
-                    label="Emergency/Guardian Phone"
-                    mode="outlined"
-                    value={values.GuardianPhone}
-                    onChangeText={handleChange('GuardianPhone')}
-                    onBlur={handleBlur('GuardianPhone')}
-                  />
-                  {touched.GuardianPhone && errors.GuardianPhone ? (
-                    <HelperText padding="none" type="error">
-                      {errors.GuardianPhone}
-                    </HelperText>
-                  ) : null}
                 </Card.Content>
               </Card>
               <Button
@@ -494,7 +537,7 @@ const ApplicationScreen = ({ navigation }) => {
                 loading={loading}
                 mode="contained"
                 contentStyle={{ width: '100%', height: 50 }}
-                onPress={handleRegistration}>
+                onPress={handleSubmit}>
                 Register
               </Button>
             </>

@@ -11,6 +11,7 @@
  */
 import React from 'react'
 import styled from 'styled-components/native'
+import { WebView } from 'react-native-webview'
 
 import { AppBar } from '../../components'
 
@@ -21,26 +22,13 @@ const ScheduleScreen = ({ navigation }) => {
         title="My Schedule"
         onNotiPress={() => navigation.navigate('Notification')}
       />
-      <Content>
-        <Text>Under Construction</Text>
-      </Content>
+      <WebView source={{ uri: 'https://www.camdebate.org/MyCamDEBATE.aspx' }} />
     </Container>
   )
 }
 
 const Container = styled.View`
   flex: 1;
-`
-
-const Content = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-`
-
-const Text = styled.Text`
-  font-size: 24px;
-  font-weight: bold;
 `
 
 export default ScheduleScreen

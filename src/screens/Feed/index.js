@@ -27,7 +27,10 @@ const FeedScreen = ({ navigation }) => {
   console.log('FeedScreen token', token)
 
   if (loading) console.log('GraphQL loading...')
-  if (error) console.log('GaphQL error!', error)
+  if (error) {
+    console.log('GaphQL error!', error)
+    navigation.navigate('Maintenance')
+  }
   console.log('GraphQL data', data)
 
   const sortedData = data

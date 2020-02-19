@@ -9,39 +9,30 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components/native'
 import { ScrollView } from 'react-native'
+import { Button, Snackbar } from 'react-native-paper'
 import { DrawerItems } from 'react-navigation-drawer'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
-//import { useLazyQuery } from '@apollo/react-hooks'
 
 import { primaryColor } from '../../resources'
-//import { ProfileQuery } from '../../resources/queries'
 import { logoutAsync } from '../../service'
 
 const Drawer = props => {
   const dispatch = useDispatch()
+  const [toggleSnackbar, setToggleSnackbar] = useState('')
   const { navigation } = props
   const { token, profile } = useSelector(state => state.auth, shallowEqual)
-  /* const [getProfile, { called, data, error, loading }] = useLazyQuery(
-    ProfileQuery
-  ) */
-
-  //if (loading) console.log('Loading...')
-  //if (error) console.log('Error', error)
 
   console.log('ProfileScreen profile', profile)
 
   const handleLogoutPress = async () => {
     const loggedOut = await dispatch(logoutAsync())
-    console.log('Logged out', !loggedOut)
-    if (!loggedOut) navigation.navigate('AuthLoading')
+    console.log('Logged out', loggedOut)
+    if (!loggedOut) navigation.navigate('Main')
+    else setToggleSnackbar('There are some errors!')
   }
-
-  /* useEffect(() => {
-    if (!called && token) getProfile()
-  }, [token]) */
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -62,11 +53,13 @@ const Drawer = props => {
                 </UserInfoContainer>
               ) : (
                 <UserInfoContainer>
-                  <TextName>
-                    {`${profile.Title}. ${profile.GivenName}`}
-                  </TextName>
-                  <Text>{profile.Phone}</Text>
-                  {<Text>{profile.WorkPlace}</Text>}
+                  <TextName>CamDEBATE App</TextName>
+                  <Button
+                    mode="contained"
+                    style={{ alignSelf: 'baseline' }}
+                    onPress={() => navigation.navigate('Signin')}>
+                    Login
+                  </Button>
                 </UserInfoContainer>
               )}
             </Header>
@@ -98,6 +91,16 @@ const Drawer = props => {
             <Text>All right reserved.</Text>
           </Footer>
         </Container>
+        <Snackbar
+          duration={5000}
+          visible={toggleSnackbar}
+          onDismiss={() => setToggleSnackbar('')}
+          action={{
+            label: 'Done',
+            onPress: () => setToggleSnackbar('')
+          }}>
+          {toggleSnackbar || 'Unknown errors!'}
+        </Snackbar>
       </SafeArea>
     </ScrollView>
   )

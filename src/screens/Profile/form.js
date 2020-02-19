@@ -9,12 +9,17 @@
  *
  * Created At: 03/02/2020
  */
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components/native'
-import { Button, HelperText, TextInput } from 'react-native-paper'
+import {
+  Button,
+  Card as PaperCard,
+  HelperText,
+  TextInput
+} from 'react-native-paper'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useMutation } from '@apollo/react-hooks'
 import { Formik } from 'formik'
-import { object, string } from 'yup'
 
 import { DatePicker, Picker, Radio } from '../../components'
 import { primaryColor } from '../../resources'
@@ -24,44 +29,46 @@ import {
   TitleItems
 } from '../../resources/mocks'
 import { UpdateProfileMutation } from '../../resources/mutations'
+import { ProfileQuery } from '../../resources/queries'
+import { setProfileAsync } from '../../service'
 
-const ProfileSchema = object().shape({
-  Title: string().required(),
-  GivenName: string().required(),
-  FamilyName: string().required(),
-  Sex: string().required(),
-  Nationality: string().required(),
-  DOB: string().required(),
-  Phone: string().required(),
-  Email: string().required(),
-  WorkPlace: string().required()
-})
+const ProfileForm = ({ setToggleSnackbar }) => {
+  const dispatch = useDispatch()
 
-const ProfileForm = () => {
+  const refFamilyName = useRef()
+  const refPhone = useRef()
+  const refGuardianPhone = useRef()
+  const refEmail = useRef()
+  const refAddress = useRef()
+  const refSchool = useRef()
+  const refWorkPlace = useRef()
+
   const [
     updateProfile,
-    { data: updateData, error: updateError, loading: updateLoading }
+    { error: updateError, loading: updateLoading }
   ] = useMutation(UpdateProfileMutation)
+  const { profile } = useSelector(state => state.auth, shallowEqual)
 
   const InitialValues = {
-    Title: data ? data.profile.contact.Title : '',
-    GivenName: data ? data.profile.contact.GivenName : '',
-    FamilyName: data ? data.profile.contact.FamilyName : '',
-    Sex: data ? data.profile.contact.Sex : '',
-    Nationality: data ? data.profile.contact.Nationality : '',
-    DOB: data ? data.profile.contact.DOB : '',
-    Phone: data ? data.profile.contact.Phone : '',
-    GuardianPhone: data ? data.profile.contact.GuardianPhone : '',
-    Email: data ? data.profile.contact.Email : '',
-    Address: data ? data.profile.contact.Address : '',
-    School: data ? data.profile.contact.School : '',
-    WorkPlace: data ? data.profile.contact.WorkPlace : ''
+    Title: profile ? profile.Title : '',
+    GivenName: profile ? profile.GivenName : '',
+    FamilyName: profile ? profile.FamilyName : '',
+    Sex: profile ? profile.Sex : '',
+    Nationality: profile ? profile.Nationality : '',
+    DOB: profile ? profile.DOB : '',
+    Phone: profile ? profile.Phone : '',
+    GuardianPhone: profile ? profile.GuardianPhone : '',
+    Email: profile ? profile.Email : '',
+    Address: profile ? profile.Address : '',
+    School: profile ? profile.School : '',
+    WorkPlace: profile ? profile.WorkPlace : ''
   }
+
+  console.log('ProfileScreen profile', profile)
 
   const handleUpdateProfile = async values => {
     console.log('handleUpdateProfile values', values)
     try {
-      setToggleSnackbar(true)
       const res = await updateProfile({
         variables: {
           input: values
@@ -70,10 +77,14 @@ const ProfileForm = () => {
         awaitRefetchQueries: true
       })
       console.log('handleUpdateProfile response', res)
-      const { code } = res.data.updateProfile
-      if (code === 200) setToggleSnackbar(false)
+      const { code, contact } = res.data.updateProfile
+      if (code === 200) {
+        await dispatch(setProfileAsync(contact))
+        setToggleSnackbar('Profile updated!')
+      } else setToggleSnackbar('There is some errors!')
     } catch (e) {
-      console.log('updateProfile e', e)
+      console.log('updateProfile error', e)
+      setToggleSnackbar('Unknown Error!')
     }
   }
 
@@ -81,11 +92,10 @@ const ProfileForm = () => {
     <Formik
       enableReinitialize
       initialValues={InitialValues}
-      validationSchema={ProfileSchema}
       onSubmit={handleUpdateProfile}>
       {({
-        handleChange,
         handleBlur,
+        handleChange,
         handleSubmit,
         dirty,
         errors,
@@ -96,41 +106,6 @@ const ProfileForm = () => {
           <Card>
             <Card.Title title="Your Details" />
             <Card.Content>
-              <PickerMargined
-                items={TitleItems}
-                label="Select Title"
-                value={values.Title}
-                onChangeValue={handleChange('Title')}
-              />
-              {touched.Title && errors.Title ? (
-                <HelperText padding="none" type="error">
-                  {errors.Title}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="Given Name"
-                mode="outlined"
-                value={values.GivenName}
-                onChangeText={handleChange('GivenName')}
-                onBlur={handleBlur('GivenName')}
-              />
-              {touched.GivenName && errors.GivenName ? (
-                <HelperText padding="none" type="error">
-                  {errors.GivenName}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="Family Name"
-                mode="outlined"
-                value={values.FamilyName}
-                onChangeText={handleChange('FamilyName')}
-                onBlur={handleBlur('FamilyName')}
-              />
-              {touched.FamilyName && errors.FamilyName ? (
-                <HelperText padding="none" type="error">
-                  {errors.FamilyName}
-                </HelperText>
-              ) : null}
               <Radio
                 color={primaryColor}
                 items={GenderRadioItems}
@@ -145,15 +120,142 @@ const ProfileForm = () => {
                   {errors.Sex}
                 </HelperText>
               ) : null}
-              <PickerMargined
-                items={NationalityItems}
-                label="Select Nationality"
-                value={values.Nationality}
-                onChangeValue={handleChange('Nationality')}
+              <TextInputMargined
+                autoCompleteType="name"
+                label="Given Name"
+                mode="outlined"
+                textContentType="givenName"
+                value={values.GivenName}
+                onChangeText={handleChange('GivenName')}
+                onBlur={handleBlur('GivenName')}
+                onSubmitEditing={() => refFamilyName.current.focus()}
               />
-              {touched.Nationality && errors.Nationality ? (
+              {touched.GivenName && errors.GivenName ? (
                 <HelperText padding="none" type="error">
-                  {errors.Nationality}
+                  {errors.GivenName}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refFamilyName}
+                autoCompleteType="name"
+                label="Family Name"
+                mode="outlined"
+                textContentType="familyName"
+                value={values.FamilyName}
+                onChangeText={handleChange('FamilyName')}
+                onBlur={handleBlur('FamilyName')}
+                onSubmitEditing={() => refPhone.current.focus()}
+              />
+              {touched.FamilyName && errors.FamilyName ? (
+                <HelperText padding="none" type="error">
+                  {errors.FamilyName}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refPhone}
+                autoCompleteType="tel"
+                keyboardType="phone-pad"
+                label="Personal Phone"
+                mode="outlined"
+                textContentType="telephoneNumber"
+                value={values.Phone}
+                onChangeText={handleChange('Phone')}
+                onBlur={handleBlur('Phone')}
+                onSubmitEditing={() => refGuardianPhone.current.focus()}
+              />
+              {touched.Phone && errors.Phone ? (
+                <HelperText padding="none" type="error">
+                  {errors.Phone}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refGuardianPhone}
+                autoCompleteType="tel"
+                keyboardType="phone-pad"
+                label="Working/Guardian Phone"
+                mode="outlined"
+                textContentType="telephoneNumber"
+                value={values.GuardianPhone}
+                onChangeText={handleChange('GuardianPhone')}
+                onBlur={handleBlur('GuardianPhone')}
+                onSubmitEditing={() => refEmail.current.focus()}
+              />
+              {touched.GuardianPhone && errors.GuardianPhone ? (
+                <HelperText padding="none" type="error">
+                  {errors.GuardianPhone}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refEmail}
+                autoCompleteType="email"
+                keyboardType="email-address"
+                label="E-Mail"
+                mode="outlined"
+                textContentType="emailAddress"
+                value={values.Email}
+                onChangeText={handleChange('Email')}
+                onBlur={handleBlur('Email')}
+                onSubmitEditing={() => refAddress.current.focus()}
+              />
+              {touched.Email && errors.Email ? (
+                <HelperText padding="none" type="error">
+                  {errors.Email}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refAddress}
+                autoCompleteType="street-address"
+                label="Current Address"
+                mode="outlined"
+                textContentType="fullStreetAddress"
+                value={values.Address}
+                onChangeText={handleChange('Address')}
+                onBlur={handleBlur('Address')}
+                onSubmitEditing={() => refSchool.current.focus()}
+              />
+              {touched.Address && errors.Address ? (
+                <HelperText padding="none" type="error">
+                  {errors.Address}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refSchool}
+                label="Name of Your School"
+                mode="outlined"
+                textContentType="organizationName"
+                value={values.School}
+                onChangeText={handleChange('School')}
+                onBlur={handleBlur('School')}
+                onSubmitEditing={() => refWorkPlace.current.focus()}
+              />
+              {touched.School && errors.School ? (
+                <HelperText padding="none" type="error">
+                  {errors.School}
+                </HelperText>
+              ) : null}
+              <TextInputMargined
+                ref={refWorkPlace}
+                label="Workplace"
+                mode="outlined"
+                textContentType="organizationName"
+                value={values.WorkPlace}
+                onChangeText={handleChange('WorkPlace')}
+                onBlur={handleBlur('WorkPlace')}
+              />
+              {touched.WorkPlace && errors.WorkPlace ? (
+                <HelperText padding="none" type="error">
+                  {errors.WorkPlace}
+                </HelperText>
+              ) : null}
+              <PickerMargined
+                items={TitleItems}
+                label="Select Title"
+                value={values.Title}
+                onChangeValue={handleChange('Title')}
+              />
+              {touched.Title && errors.Title ? (
+                <HelperText padding="none" type="error">
+                  {errors.Title}
                 </HelperText>
               ) : null}
               <DatePicker
@@ -166,76 +268,15 @@ const ProfileForm = () => {
                   {errors.DOB}
                 </HelperText>
               ) : null}
-              <TextInputMargined
-                label="Personal Phone"
-                mode="outlined"
-                value={values.Phone}
-                onChangeText={handleChange('Phone')}
-                onBlur={handleBlur('Phone')}
+              <Picker
+                items={NationalityItems}
+                label="Select Nationality"
+                value={values.Nationality}
+                onChangeValue={handleChange('Nationality')}
               />
-              {touched.Phone && errors.Phone ? (
+              {touched.Nationality && errors.Nationality ? (
                 <HelperText padding="none" type="error">
-                  {errors.Phone}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="Working/Guardian Phone"
-                mode="outlined"
-                value={values.GuardianPhone}
-                onChangeText={handleChange('GuardianPhone')}
-                onBlur={handleBlur('GuardianPhone')}
-              />
-              {touched.GuardianPhone && errors.GuardianPhone ? (
-                <HelperText padding="none" type="error">
-                  {errors.GuardianPhone}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="E-Mail"
-                mode="outlined"
-                value={values.Email}
-                onChangeText={handleChange('Email')}
-                onBlur={handleBlur('Email')}
-              />
-              {touched.Email && errors.Email ? (
-                <HelperText padding="none" type="error">
-                  {errors.Email}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="Current Address"
-                mode="outlined"
-                value={values.Address}
-                onChangeText={handleChange('Address')}
-                onBlur={handleBlur('Address')}
-              />
-              {touched.Address && errors.Address ? (
-                <HelperText padding="none" type="error">
-                  {errors.Address}
-                </HelperText>
-              ) : null}
-              <TextInputMargined
-                label="Name of Your School"
-                mode="outlined"
-                value={values.School}
-                onChangeText={handleChange('School')}
-                onBlur={handleBlur('School')}
-              />
-              {touched.School && errors.School ? (
-                <HelperText padding="none" type="error">
-                  {errors.School}
-                </HelperText>
-              ) : null}
-              <TextInput
-                label="Workplace"
-                mode="outlined"
-                value={values.WorkPlace}
-                onChangeText={handleChange('WorkPlace')}
-                onBlur={handleBlur('WorkPlace')}
-              />
-              {touched.WorkPlace && errors.WorkPlace ? (
-                <HelperText padding="none" type="error">
-                  {errors.WorkPlace}
+                  {errors.Nationality}
                 </HelperText>
               ) : null}
             </Card.Content>
@@ -258,6 +299,10 @@ const ProfileForm = () => {
     </Formik>
   )
 }
+
+const Card = styled(PaperCard)`
+  margin-bottom: 10px;
+`
 
 const PickerMargined = styled(Picker)`
   margin-bottom: 10px;

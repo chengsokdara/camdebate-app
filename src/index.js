@@ -12,7 +12,7 @@
 import React, { useEffect } from 'react'
 import OneSignal from 'react-native-onesignal'
 import AsyncStorage from '@react-native-community/async-storage'
-import moment from 'moment'
+
 import { ApolloProvider } from '@apollo/react-hooks'
 import { getUniqueId } from 'react-native-device-info'
 import { Provider as PaperProvider } from 'react-native-paper'
@@ -93,12 +93,12 @@ const App = () => {
 
   useEffect(() => {
     OneSignal.init(ONESIGNAL_APP_ID)
-    //OneSignal.addEventListener('received', onReceived)
-    //OneSignal.addEventListener('opened', onOpened)
+    OneSignal.addEventListener('received', onReceived)
+    OneSignal.addEventListener('opened', onOpened)
     OneSignal.addEventListener('ids', onIds)
     return () => {
-      //OneSignal.removeEventListener('received', onReceived)
-      //OneSignal.removeEventListener('opened', onOpened)
+      OneSignal.removeEventListener('received', onReceived)
+      OneSignal.removeEventListener('opened', onOpened)
       OneSignal.removeEventListener('ids', onIds)
     }
   }, [])

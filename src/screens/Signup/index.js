@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import AsyncStorage from '@react-native-community/async-storage'
 import styled from 'styled-components/native'
 import { useDispatch } from 'react-redux'
@@ -45,6 +45,8 @@ const InitialValues = {
   Password: ''
 }
 
+const PHONE_EXIST = 'Phone number already exist!'
+
 const SignupSchema = object().shape({
   GivenName: string()
     .min(2, 'Given name must be at least 2 characters.')
@@ -62,7 +64,7 @@ const SignupSchema = object().shape({
     )
     .required('Phone number is required!'),
   Email: string()
-    .min(7, 'Email must be at least 7 characters.')
+    .min(9, 'Email must be at least 7 characters.')
     .max(50, 'Email length is too long.')
     .email('Email is not valid.'),
   Password: string()
@@ -84,7 +86,6 @@ const TEST_REGISTER_DATA = {
 
 const SignupScreen = ({ navigation }) => {
   const dispatch = useDispatch()
-  const refGivenName = useRef()
   const refFamilyName = useRef()
   const refPhone = useRef()
   const refEmail = useRef()
@@ -111,6 +112,9 @@ const SignupScreen = ({ navigation }) => {
         const logged = await dispatch(loginAsync(token, contact))
         console.log('SignupScreen logged', logged)
         if (logged) navigation.navigate('App')
+      }
+      if (code === 303) {
+        setToggleSnackbar(PHONE_EXIST)
       } else setToggleSnackbar('There is some errors!')
       console.log('handleRegister response', res)
     } catch (e) {
@@ -146,19 +150,7 @@ const SignupScreen = ({ navigation }) => {
                   subtitle="CamDEBATE account registration"
                 />
                 <Card.Content>
-                  <PickerMargined
-                    items={TitleItems}
-                    label="Select Title"
-                    value={values.Title}
-                    onChangeValue={handleChange('Title')}
-                  />
-                  {touched.Title && errors.Title ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Title}
-                    </HelperText>
-                  ) : null}
                   <TextInputMargined
-                    ref={refGivenName}
                     autoCompleteType="name"
                     label="Given Name"
                     mode="outlined"
@@ -187,28 +179,6 @@ const SignupScreen = ({ navigation }) => {
                   {touched.FamilyName && errors.FamilyName ? (
                     <HelperText padding="none" type="error">
                       {errors.FamilyName}
-                    </HelperText>
-                  ) : null}
-                  <PickerMargined
-                    items={NationalityItems}
-                    label="Select Nationality"
-                    value={values.Nationality}
-                    onChangeValue={handleChange('Nationality')}
-                  />
-                  {touched.Nationality && errors.Nationality ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Nationality}
-                    </HelperText>
-                  ) : null}
-                  <PickerMargined
-                    items={CountryItems}
-                    label="Select Country"
-                    value={values.Country}
-                    onChangeValue={handleChange('Country')}
-                  />
-                  {touched.Country && errors.Country ? (
-                    <HelperText padding="none" type="error">
-                      {errors.Country}
                     </HelperText>
                   ) : null}
                   <TextInputMargined
@@ -245,7 +215,7 @@ const SignupScreen = ({ navigation }) => {
                       {errors.Email}
                     </HelperText>
                   ) : null}
-                  <TextInput
+                  <TextInputMargined
                     ref={refPassword}
                     secureTextEntry
                     autoCompleteType="password"
@@ -255,11 +225,43 @@ const SignupScreen = ({ navigation }) => {
                     value={values.Password}
                     onChangeText={handleChange('Password')}
                     onBlur={handleBlur('Password')}
-                    onSubmitEditing={() => refGivenName.current.focus()}
                   />
                   {touched.Password && errors.Password ? (
                     <HelperText padding="none" type="error">
                       {errors.Password}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={TitleItems}
+                    label="Select Title"
+                    value={values.Title}
+                    onChangeValue={handleChange('Title')}
+                  />
+                  {touched.Title && errors.Title ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Title}
+                    </HelperText>
+                  ) : null}
+                  <PickerMargined
+                    items={CountryItems}
+                    label="Select Country"
+                    value={values.Country}
+                    onChangeValue={handleChange('Country')}
+                  />
+                  {touched.Country && errors.Country ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Country}
+                    </HelperText>
+                  ) : null}
+                  <Picker
+                    items={NationalityItems}
+                    label="Select Nationality"
+                    value={values.Nationality}
+                    onChangeValue={handleChange('Nationality')}
+                  />
+                  {touched.Nationality && errors.Nationality ? (
+                    <HelperText padding="none" type="error">
+                      {errors.Nationality}
                     </HelperText>
                   ) : null}
                 </Card.Content>
@@ -287,12 +289,15 @@ const SignupScreen = ({ navigation }) => {
         </Footer>
       </Content>
       <Snackbar
-        duration={5000}
+        duration={toggleSnackbar === PHONE_EXIST ? 10000 : 5000}
         visible={toggleSnackbar}
         onDismiss={() => setToggleSnackbar('')}
         action={{
-          label: 'Done',
-          onPress: () => setToggleSnackbar('')
+          label: toggleSnackbar === PHONE_EXIST ? 'Login' : 'Done',
+          onPress: () =>
+            toggleSnackbar === PHONE_EXIST
+              ? navigation.navigate('Signin')
+              : setToggleSnackbar('')
         }}>
         {toggleSnackbar || 'Unknown error!'}
       </Snackbar>
