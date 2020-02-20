@@ -10,16 +10,13 @@
  * Created At: 03/02/2020
  */
 import gql from 'graphql-tag'
-import { ProfileFragment } from '../fragments'
+import { MenusFragment } from '../fragments'
 
-export const ProfileQuery = gql`
-  query Profile {
-    profile {
-      ...ProfileFragment
+export const MenusQuery = gql`
+  query MenusQuery {
+    menus {
+      ...MenusFragment
     }
   }
-  ${ProfileFragment}
+  ${MenusFragment}
 `
-
-export * from './Feed'
-export * from './Menu'

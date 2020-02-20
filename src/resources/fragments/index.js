@@ -58,4 +58,5 @@ export const ProfileFragment = gql`
 export * from './Applicant'
 export * from './Contact'
 export * from './Feed'
+export * from './Menu'
 export * from './Player'

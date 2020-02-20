@@ -199,7 +199,7 @@ const SigninScreen = ({ navigation }) => {
           label: 'Done',
           onPress: () => setToggleSnackbar('')
         }}>
-        {toggleSnackbar || 'Unknown updated!'}
+        {toggleSnackbar || 'Unknown Error!'}
       </Snackbar>
     </Container>
   )

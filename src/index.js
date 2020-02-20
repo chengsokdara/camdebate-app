@@ -18,14 +18,13 @@ import { getUniqueId } from 'react-native-device-info'
 import { Provider as PaperProvider } from 'react-native-paper'
 import { Provider as ReduxProvider } from 'react-redux'
 
-import Navigator from './screens'
-import client from './service/client'
-import store from './service/store'
 import { ONESIGNAL_APP_ID } from './resources'
 import { InitAppMutation } from './resources/mutations'
 import theme from './resources/theme'
-
+import client from './service/client'
+import store from './service/store'
 import { Layout } from './components'
+import Navigator from './screens'
 
 const App = () => {
   const onReceived = notification => {

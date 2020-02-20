@@ -138,6 +138,10 @@ const DrawerNavigator = createDrawerNavigator(
       screen: NotificationNavigator,
       navigationOptions: { drawerLabel: () => null }
     },
+    Browser: {
+      screen: WebScreen,
+      navigationOptions: { drawerLabel: () => null }
+    },
     Logout: () => null
   },
   {
@@ -213,7 +217,11 @@ const AuthDrawerNavigator = createDrawerNavigator(
     Feed: AuthBottomNavigator,
     Contact: ContactScreen,
     Faq: FaqScreen,
-    Term: TermScreen
+    Term: TermScreen,
+    Browser: {
+      screen: WebScreen,
+      navigationOptions: { drawerLabel: () => null }
+    }
   },
   {
     initialRouteName: AuthDrawerRouteName,
