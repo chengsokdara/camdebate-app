@@ -10,15 +10,15 @@
  * Created At: 03/02/2020
  */
 import gql from 'graphql-tag'
-import { ContactFragment } from '../fragments'
+import { ProfileFragment } from '../fragments'
 
 export const ProfileQuery = gql`
   query Profile {
     profile {
-      ...ContactFragment
+      ...ProfileFragment
     }
   }
-  ${ContactFragment}
+  ${ProfileFragment}
 `
 
 export * from './Feed'

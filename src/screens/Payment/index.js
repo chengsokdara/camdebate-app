@@ -11,17 +11,15 @@
  */
 import React from 'react'
 import styled from 'styled-components/native'
+import { Text } from 'react-native'
 
 import { AppBar } from '../../components'
 
 const PaymentScreen = ({ navigation }) => {
   return (
     <Container>
-      <AppBar
-        backable
-        onBackPress={() => navigation.goBack()}
-        onNotiPress={() => navigation.navigate('Notification')}
-      />
+      <AppBar onNotiPress={() => navigation.navigate('Notification')} />
+      <Text>Payment Screen</Text>
     </Container>
   )
 }

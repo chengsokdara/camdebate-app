@@ -43,11 +43,11 @@ const ProfileForm = ({ setToggleSnackbar }) => {
   const refSchool = useRef()
   const refWorkPlace = useRef()
 
+  const { profile } = useSelector(state => state.auth, shallowEqual)
   const [
     updateProfile,
     { error: updateError, loading: updateLoading }
   ] = useMutation(UpdateProfileMutation)
-  const { profile } = useSelector(state => state.auth, shallowEqual)
 
   const InitialValues = {
     Title: profile ? profile.Title : '',

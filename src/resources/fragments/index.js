@@ -30,6 +30,31 @@ export const AuthFragment = gql`
   }
 `
 
+export const ProfileFragment = gql`
+  fragment ProfileFragment on ProfileResponse {
+    code
+    success
+    message
+    profile {
+      ContactID
+      Title
+      GivenName
+      FamilyName
+      Sex
+      Nationality
+      DOB
+      Phone
+      Email
+      WorkPlace
+      GuardianPhone
+      Address
+      School
+      Country
+      Paid
+    }
+  }
+`
+
 export * from './Applicant'
 export * from './Contact'
 export * from './Feed'

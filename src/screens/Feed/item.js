@@ -13,8 +13,8 @@ import React from 'react'
 import styled from 'styled-components/native'
 import { Button, Card as PaperCard, List } from 'react-native-paper'
 
-import { primaryColor } from '../../../../resources'
-import { formatString } from '../../../../service'
+import { primaryColor } from '../../resources'
+import { formatString } from '../../service'
 
 const FeedItem = ({ item, last, navigation }) => {
   const {
@@ -192,68 +192,3 @@ const TableText = styled.Text`
 `
 
 export default FeedItem
-
-/*
-<Scroll contentContainerStyle={{ flexGrow: 1, padding: 10 }}>
-  {MockNews.map((item, index) =>
-    index === 0
-      ? renderSectionAnnouncement(item)
-      : index === 1
-      ? renderSectionNews(item, index)
-      : renderNews(item, index)
-  )}
-</Scroll>
-*/
-
-/*
-const renderSectionAnnouncement = items => {
-  const { button, content, link, list, notice, title } = items
-  return !token ? (
-    <ContainerAnnouncement key="announcement">
-      <ContainerSection>
-        <Icon name="bullhorn" size={22} color={primaryColor} />
-        <SectionTitle color={primaryColor}>ANNOUNCEMENT</SectionTitle>
-      </ContainerSection>
-      <Card>
-        <NewsTitle title={title} />
-        <Card.Content>
-          <Text>{content}</Text>
-          {list.map((item, index) => (
-            <List.Item
-              key={index}
-              title={item}
-              titleNumberOfLines={2}
-              left={() => (
-                <Icon
-                  name="circle-medium"
-                  size={12}
-                  color="black"
-                  style={{ alignSelf: 'center' }}
-                />
-              )}
-            />
-          ))}
-          <Button
-            mode="contained"
-            contentStyle={{
-              height: 50,
-              paddingHorizontal: 10
-            }}
-            onPress={() => navigation.navigate('Signup')}>
-            {button}
-          </Button>
-          <Caption style={{ marginTop: 10 }}>
-            {notice}
-            <Link
-              color={primaryColor}
-              style={{ color: 'blue' }}
-              onPress={() => Linking.openURL(link)}>
-              HERE
-            </Link>
-          </Caption>
-        </Card.Content>
-      </Card>
-    </ContainerAnnouncement>
-  ) : null
-}
-*/

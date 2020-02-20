@@ -9,6 +9,7 @@
  *
  * Created At: 03/02/2020
  */
+/*
 import React from 'react'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -183,3 +184,4 @@ const Web = styled(WebView)`
 `
 
 export default NewsScreen
+ */

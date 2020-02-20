@@ -34,7 +34,7 @@ const MainScreen = ({ navigation }) => {
           const res = await client.query({
             query: ProfileQuery
           })
-          const { code, contact } = res.data.profile
+          const { code, profile: contact } = res.data.profile
           if (code === 200) profile = contact
         }
         if (token) await dispatch(loginAsync(token, profile))

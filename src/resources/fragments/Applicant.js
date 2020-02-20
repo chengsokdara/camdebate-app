@@ -32,8 +32,10 @@ export const ApplicantFragment = gql`
       Email
       Address
       CityProvince
+      HighSchool
       University
       EnglishSchool
+      WorkPlace
       GuardianPhone
       Paid
     }
@@ -61,8 +63,10 @@ export const ApplicantsFragment = gql`
       Email
       Address
       CityProvince
+      HighSchool
       University
       EnglishSchool
+      WorkPlace
       GuardianPhone
       Paid
     }

@@ -19,7 +19,7 @@ import { useSelector, shallowEqual } from 'react-redux'
 import { primaryColor } from '../../resources'
 import { FeedsQuery } from '../../resources/queries'
 import { AppBar } from '../../components'
-import { FeedItem } from './components'
+import FeedItem from './item'
 
 const FeedScreen = ({ navigation }) => {
   const { loading, error, data, refetch } = useQuery(FeedsQuery)

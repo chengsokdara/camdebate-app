@@ -43,14 +43,13 @@ const AuthDrawerRouteName = 'Feed'
 const AppRouteName = 'Feed'
 const AppDrawerRouteName = 'Feed'
 
-const ApplicationNavigator = createStackNavigator(
+const ApplicationNavigator = createSwitchNavigator(
   {
     Application: ApplicationScreen,
     Payment: PaymentScreen
   },
   {
-    initialRouteName: 'Application',
-    headerMode: 'none'
+    initialRouteName: 'Application'
   }
 )
 
