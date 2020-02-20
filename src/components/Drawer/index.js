@@ -140,9 +140,9 @@ const Drawer = props => {
             }}
           />
           <TextSection>Menu</TextSection>
-          {MenuItems && MenuItems.menus.code === 200
-            ? MenuItems.menus.menus
-                .sort((a, b) => b.Order > a.Order)
+          {MenuItems?.menus?.code === 200
+            ? MenuItems?.menus?.menus
+                .sort((a, b) => a.Order > b.Order)
                 .map(item =>
                   item.Visible && !item.Deleted && (!item.Screen || profile) ? (
                     <DrawerItem
