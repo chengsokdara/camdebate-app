@@ -116,7 +116,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 onPress={() =>
                   setSigninBy(signinBy === 'Phone' ? 'Email' : 'Phone')
                 }>
-                {`Login by ${signinBy === 'Phone' ? 'Email' : 'Phone'}?`}
+                {`Request by ${signinBy === 'Phone' ? 'Email' : 'Phone'}?`}
               </Button>
             </>
           )}

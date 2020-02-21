@@ -74,7 +74,7 @@ const Drawer = props => {
               source={require('../../resources/images/camdebate_logo.png')}
             />
             <AppInfoContainer>
-              <TextName>CamDEBATE App</TextName>
+              <TextName>CamDEBATE</TextName>
               <Button
                 icon="shield-account-outline"
                 mode="contained"
