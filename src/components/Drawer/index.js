@@ -9,82 +9,32 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components/native'
+import { BackHandler } from 'react-native'
 import { Button, Snackbar } from 'react-native-paper'
 import { DrawerItems } from 'react-navigation-drawer'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useQuery } from '@apollo/react-hooks'
 
 import { primaryColor } from '../../resources'
+//import { MockDrawerItems } from '../../resources/mocks'
 import { MenusQuery } from '../../resources/queries'
 import { logoutAsync } from '../../service'
 import DrawerItem from './item'
 
-const MOCK_DRAWER_ITEMS = [
-  {
-    MenuID: 1,
-    Title: 'Login',
-    Url: 'https://www.google.com',
-    Screen: 'Signin',
-    Visible: true,
-    Deleted: false
-  },
-  {
-    MenuID: 2,
-    Title: 'Hello 2',
-    Url: 'https://www.google.com',
-    Visible: true,
-    Deleted: false
-  },
-  {
-    MenuID: 3,
-    Title: 'Hello 3',
-    Url: 'https://www.google.com',
-    Visible: true,
-    Deleted: false
-  },
-  {
-    MenuID: 4,
-    Title: 'Hello 4',
-    Url: 'https://www.google.com',
-    Visible: false,
-    Deleted: true
-  },
-  {
-    MenuID: 5,
-    Title: 'Hello 5',
-    Url: 'https://www.google.com',
-    Visible: false,
-    Deleted: false
-  },
-  {
-    MenuID: 6,
-    Title: 'Hello 6',
-    Url: 'https://www.google.com',
-    Visible: true,
-    Deleted: false
-  },
-  {
-    MenuID: 7,
-    Title: 'Hello 7',
-    Url: 'https://www.google.com',
-    Visible: true,
-    Deleted: false
-  }
-]
-
 const Drawer = props => {
   const dispatch = useDispatch()
   const { navigation } = props
+  const [menuItems, setMenuItems] = useState([])
   const [toggleSnackbar, setToggleSnackbar] = useState('')
   const { token, profile } = useSelector(state => state.auth, shallowEqual)
-  const { data: MenuItems, error, loading } = useQuery(MenusQuery)
+  const { data, error, loading } = useQuery(MenusQuery)
 
   console.log('props', props)
 
+  console.log('ProfileScreen data', data)
   console.log('ProfileScreen profile', profile)
-  console.log('ProfileScreen MenuItems', MenuItems)
 
   const handleLogoutPress = async () => {
     const loggedOut = await dispatch(logoutAsync())
@@ -92,6 +42,15 @@ const Drawer = props => {
     if (!loggedOut) navigation.navigate('Main')
     else setToggleSnackbar('There are some errors!')
   }
+
+  // Handle drawer menu items change
+  useEffect(() => {
+    if (!loading && !error && data) {
+      const { code, menus } = data.menus
+      const sortedMenus = menus.sort((a, b) => a.Order > b.Order)
+      if (code === 200) setMenuItems(sortedMenus)
+    }
+  }, [error, loading, data])
 
   return (
     <SafeArea forceInset={{ top: 'always', horizontal: 'never' }}>
@@ -103,21 +62,11 @@ const Drawer = props => {
             />
             {profile ? (
               <UserInfoContainer>
-                <TextName>{`${profile.Title}. ${profile.GivenName}`}</TextName>
+                <TextName>{`${profile.Title} ${profile.GivenName}`}</TextName>
                 <Text>{profile.Phone}</Text>
-                {profile.WorkPlace ? <Text>{profile.WorkPlace}</Text> : null}
+                <Text>{profile.WorkPlace}</Text>
               </UserInfoContainer>
-            ) : (
-              <UserInfoContainer>
-                <TextName>CamDEBATE App</TextName>
-                <Button
-                  mode="contained"
-                  style={{ alignSelf: 'baseline' }}
-                  onPress={() => navigation.navigate('Signin')}>
-                  Login
-                </Button>
-              </UserInfoContainer>
-            )}
+            ) : null}
           </Header>
         ) : (
           <Header>
@@ -125,37 +74,41 @@ const Drawer = props => {
               source={require('../../resources/images/camdebate_logo.png')}
             />
             <AppInfoContainer>
-              <TextAppName>CamDEBATE</TextAppName>
-              <TextAppName>App</TextAppName>
+              <TextName>CamDEBATE App</TextName>
+              <Button
+                icon="shield-account-outline"
+                mode="contained"
+                style={{ alignSelf: 'baseline' }}
+                onPress={() => navigation.navigate('Signin')}>
+                Login
+              </Button>
             </AppInfoContainer>
           </Header>
         )}
         <Content contentContainerStyle={{ flexGrow: 1 }}>
-          <TextSection>Navigation</TextSection>
           <DrawerItems
             {...props}
             onItemPress={({ route, focused }) => {
               if (route.routeName === 'Logout') handleLogoutPress()
+              else if (route.routeName === 'Exit') BackHandler.exitApp()
               else props.onItemPress({ route, focused })
             }}
           />
-          <TextSection>Menu</TextSection>
-          {MenuItems?.menus?.code === 200
-            ? MenuItems?.menus?.menus
-                .sort((a, b) => a.Order > b.Order)
-                .map(item =>
-                  item.Visible && !item.Deleted && (!item.Screen || profile) ? (
-                    <DrawerItem
-                      key={item.MenuID}
-                      title={item.Title}
-                      onPress={() =>
-                        item.Screen
-                          ? navigation.navigate(item.Screen)
-                          : navigation.navigate('Browser', { uri: item.Url })
-                      }
-                    />
-                  ) : null
-                )
+          <Divider />
+          {menuItems.length > 0
+            ? menuItems.map(item =>
+                item.Visible && !item.Deleted && (!item.Screen || token) ? (
+                  <DrawerItem
+                    key={item.MenuID}
+                    title={item.Title}
+                    onPress={() =>
+                      item.Screen
+                        ? navigation.navigate(item.Screen)
+                        : navigation.navigate('Browser', { uri: item.Url })
+                    }
+                  />
+                ) : null
+              )
             : null}
         </Content>
         <Footer>
@@ -174,7 +127,7 @@ const Drawer = props => {
           label: 'Done',
           onPress: () => setToggleSnackbar('')
         }}>
-        {toggleSnackbar || 'Unknown errors!'}
+        {toggleSnackbar || 'Unknown Errors!'}
       </Snackbar>
     </SafeArea>
   )
@@ -201,6 +154,13 @@ const Container = styled.TouchableOpacity`
 
 const Content = styled.ScrollView`
   flex: 1;
+`
+
+const Divider = styled.View`
+  height: 1px;
+  background-color: #d5d5d5;
+  margin-top: 2px;
+  margin-bottom: 2px;
 `
 
 const Footer = styled.View`
@@ -235,26 +195,11 @@ const Text = styled.Text`
   color: ${props => (props && props.color ? props.color : 'black')};
 `
 
-const TextAppName = styled.Text`
-  font-size: 20px;
-  font-weight: bold;
-`
-
 const TextName = styled.Text`
   font-size: 18px;
   font-weight: bold;
   padding-top: 5px;
   padding-bottom: 5px;
-`
-
-const TextSection = styled.Text`
-  color: #fafafa;
-  font-size: 16px;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background-color: ${primaryColor};
 `
 
 const UserInfoContainer = styled.View`

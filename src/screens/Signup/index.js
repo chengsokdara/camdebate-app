@@ -125,7 +125,7 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <Container>
-      <AppBar />
+      <AppBar onLogoPress={() => navigation.openDrawer()} />
       <Content
         contentContainerStyle={{
           flexGrow: 1,

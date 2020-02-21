@@ -95,7 +95,7 @@ const SigninScreen = ({ navigation }) => {
 
   return (
     <Container>
-      <AppBar />
+      <AppBar onLogoPress={() => navigation.openDrawer()} />
       <Formik
         initialValues={InitialValues}
         validationSchema={

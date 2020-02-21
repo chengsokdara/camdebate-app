@@ -19,6 +19,7 @@ const AppBar = ({
   logo = true,
   title = 'CamDEBATE App',
   onBackPress,
+  onLogoPress,
   onNotiPress
 }) => {
   return (
@@ -31,7 +32,7 @@ const AppBar = ({
         />
       ) : null}
       {logo ? (
-        <TouchableOpacity onPress={backable ? onBackPress : undefined}>
+        <TouchableOpacity onPress={backable ? onBackPress : onLogoPress}>
           <Logo
             backable={backable}
             source={require('../../resources/images/camdebate_white_logo.png')}
@@ -39,7 +40,9 @@ const AppBar = ({
         </TouchableOpacity>
       ) : null}
       <Appbar.Content title={title} />
-      {onNotiPress ? <Appbar.Action icon="bell" onPress={onNotiPress} /> : null}
+      {onNotiPress ? (
+        <Appbar.Action icon="bell-outline" onPress={onNotiPress} />
+      ) : null}
     </Appbar.Header>
   )
 }

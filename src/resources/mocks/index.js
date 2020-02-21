@@ -74,6 +74,59 @@ export const CountryItems = [
   }
 ]
 
+export const MockDrawerItems = [
+  {
+    MenuID: 1,
+    Title: 'Login',
+    Url: 'https://www.google.com',
+    Screen: 'Signin',
+    Visible: true,
+    Deleted: false
+  },
+  {
+    MenuID: 2,
+    Title: 'Hello 2',
+    Url: 'https://www.google.com',
+    Visible: true,
+    Deleted: false
+  },
+  {
+    MenuID: 3,
+    Title: 'Hello 3',
+    Url: 'https://www.google.com',
+    Visible: true,
+    Deleted: false
+  },
+  {
+    MenuID: 4,
+    Title: 'Hello 4',
+    Url: 'https://www.google.com',
+    Visible: false,
+    Deleted: true
+  },
+  {
+    MenuID: 5,
+    Title: 'Hello 5',
+    Url: 'https://www.google.com',
+    Visible: false,
+    Deleted: false
+  },
+  {
+    MenuID: 6,
+    Title: 'Hello 6',
+    Url: 'https://www.google.com',
+    Visible: true,
+    Deleted: false
+  },
+  {
+    MenuID: 7,
+    Title: 'Hello 7',
+    Url: 'https://www.google.com',
+    Visible: true,
+    Deleted: false
+  }
+]
+
 export const GenderItems = [
   {
     label: '',

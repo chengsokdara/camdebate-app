@@ -35,6 +35,7 @@ const ProfileScreen = ({ navigation }) => {
     <>
       <AppBar
         title="My Profile"
+        onLogoPress={() => navigation.openDrawer()}
         onNotiPress={() => navigation.navigate('Notification')}
       />
       <Content

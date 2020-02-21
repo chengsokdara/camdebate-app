@@ -81,13 +81,17 @@ const BottomNavigator = createMaterialBottomTabNavigator(
       screen: () => null,
       navigationOptions: {
         tabBarOnPress: ({ navigation: { toggleDrawer } }) => toggleDrawer(),
-        tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
+        tabBarIcon: ({ focused }) => (
+          <NavIcon focused={focused} name="backburger" />
+        )
       }
     },
     Feed: {
       screen: FeedNavigator,
       navigationOptions: {
-        tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="home" />
+        tabBarIcon: ({ focused }) => (
+          <NavIcon focused={focused} name="bulletin-board" />
+        )
       }
     },
     Application: {
@@ -129,11 +133,54 @@ const BottomNavigator = createMaterialBottomTabNavigator(
 
 const DrawerNavigator = createDrawerNavigator(
   {
-    Feed: BottomNavigator,
-    Setting: SettingScreen,
-    Contact: ContactScreen,
-    Faq: FaqScreen,
-    Term: TermScreen,
+    Feed: {
+      screen: BottomNavigator,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="bulletin-board" />
+        )
+      }
+    },
+    Setting: {
+      screen: SettingScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="cogs" />
+        )
+      }
+    },
+    Contact: {
+      screen: ContactScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="phone-in-talk" />
+        )
+      }
+    },
+    Faq: {
+      screen: FaqScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="help-circle-outline"
+          />
+        )
+      }
+    },
+    Term: {
+      screen: TermScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="file-table-outline"
+          />
+        )
+      }
+    },
     Notification: {
       screen: NotificationNavigator,
       navigationOptions: { drawerLabel: () => null }
@@ -142,7 +189,14 @@ const DrawerNavigator = createDrawerNavigator(
       screen: WebScreen,
       navigationOptions: { drawerLabel: () => null }
     },
-    Logout: () => null
+    Logout: {
+      screen: () => null,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="logout-variant" />
+        )
+      }
+    }
   },
   {
     initialRouteName: AppDrawerRouteName,
@@ -177,13 +231,17 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
       screen: () => null,
       navigationOptions: {
         tabBarOnPress: ({ navigation: { toggleDrawer } }) => toggleDrawer(),
-        tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="menu" />
+        tabBarIcon: ({ focused }) => (
+          <NavIcon focused={focused} name="backburger" />
+        )
       }
     },
     Feed: {
       screen: FeedNavigator,
       navigationOptions: {
-        tabBarIcon: ({ focused }) => <NavIcon focused={focused} name="school" />
+        tabBarIcon: ({ focused }) => (
+          <NavIcon focused={focused} name="bulletin-board" />
+        )
       }
     },
     Signup: {
@@ -200,7 +258,7 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
       navigationOptions: {
         tabBarLabel: 'Login',
         tabBarIcon: ({ focused }) => (
-          <NavIcon focused={focused} name="clipboard-account" />
+          <NavIcon focused={focused} name="shield-account" />
         )
       }
     }
@@ -214,13 +272,61 @@ const AuthBottomNavigator = createMaterialBottomTabNavigator(
 
 const AuthDrawerNavigator = createDrawerNavigator(
   {
-    Feed: AuthBottomNavigator,
-    Contact: ContactScreen,
-    Faq: FaqScreen,
-    Term: TermScreen,
+    Feed: {
+      screen: AuthBottomNavigator,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="bulletin-board" />
+        )
+      }
+    },
+    Contact: {
+      screen: ContactScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon color={tintColor} focused={focused} name="phone-in-talk" />
+        )
+      }
+    },
+    Faq: {
+      screen: FaqScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="help-circle-outline"
+          />
+        )
+      }
+    },
+    Term: {
+      screen: TermScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="file-table-outline"
+          />
+        )
+      }
+    },
     Browser: {
       screen: WebScreen,
       navigationOptions: { drawerLabel: () => null }
+    },
+    Exit: {
+      screen: () => null,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="close-circle-outline"
+          />
+        )
+      }
     }
   },
   {

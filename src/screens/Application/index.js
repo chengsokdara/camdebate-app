@@ -35,7 +35,7 @@ const ApplicationScreen = ({ navigation }) => {
   return (
     <Container>
       <AppBar
-        backable={false}
+        onLogoPress={() => navigation.openDrawer()}
         onNotiPress={() => navigation.navigate('Notification')}
       />
       <Content

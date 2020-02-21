@@ -34,6 +34,7 @@ const MainScreen = ({ navigation }) => {
           const res = await client.query({
             query: ProfileQuery
           })
+          console.log('initAsync res', res)
           const { code, profile: contact } = res.data.profile
           if (code === 200) profile = contact
         }

@@ -33,16 +33,20 @@ const FeedScreen = ({ navigation }) => {
   }
   console.log('GraphQL data', data)
 
-  const sortedData = data?.feeds?.feeds
-        .sort((a, b) => b.FeedID - a.FeedID)
-        .sort((a, b) => b.Announcement - a.Announcement) ?? []
+  const sortedData =
+    data?.feeds?.feeds
+      .sort((a, b) => b.FeedID - a.FeedID)
+      .sort((a, b) => b.Announcement - a.Announcement) ?? []
 
   return (
     <Container>
       {token ? (
-        <AppBar onNotiPress={() => navigation.navigate('Notification')} />
+        <AppBar
+          onLogoPress={() => navigation.openDrawer()}
+          onNotiPress={() => navigation.navigate('Notification')}
+        />
       ) : (
-        <AppBar />
+        <AppBar onLogoPress={() => navigation.openDrawer()} />
       )}
       <FlatList
         refreshing={loading}

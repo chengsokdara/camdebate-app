@@ -20,6 +20,7 @@ const ScheduleScreen = ({ navigation }) => {
     <Container>
       <AppBar
         title="My Schedule"
+        onLogoPress={() => navigation.openDrawer()}
         onNotiPress={() => navigation.navigate('Notification')}
       />
       <WebView source={{ uri: 'https://www.camdebate.org/MyCamDEBATE.aspx' }} />
