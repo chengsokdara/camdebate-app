@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useRef, useState } from 'react'
+import React, { memo, useRef, useState } from 'react'
 import styled from 'styled-components/native'
 import {
   Button,
@@ -211,4 +211,4 @@ const TextInputMargined = styled(TextInput)`
   margin-bottom: 10px;
 `
 
-export default SettingScreen
+export default memo(SettingScreen)

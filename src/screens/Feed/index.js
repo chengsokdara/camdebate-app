@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React from 'react'
+import React, { memo, useMemo } from 'react'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useQuery } from '@apollo/react-hooks'
@@ -33,21 +33,12 @@ const FeedScreen = ({ navigation }) => {
   }
   console.log('GraphQL data', data)
 
-  const sortedData =
-    data?.feeds?.feeds
-      .sort((a, b) => b.FeedID - a.FeedID)
-      .sort((a, b) => b.Announcement - a.Announcement) ?? []
-
-  return (
-    <Container>
-      {token ? (
-        <AppBar
-          onLogoPress={() => navigation.openDrawer()}
-          onNotiPress={() => navigation.navigate('Notification')}
-        />
-      ) : (
-        <AppBar onLogoPress={() => navigation.openDrawer()} />
-      )}
+  const FlatListMemo = useMemo(() => {
+    const sortedData =
+      data?.feeds?.feeds
+        .sort((a, b) => b.FeedID - a.FeedID)
+        .sort((a, b) => b.Announcement - a.Announcement) ?? []
+    return (
       <FlatList
         refreshing={loading}
         data={sortedData}
@@ -88,6 +79,20 @@ const FeedScreen = ({ navigation }) => {
         }}
         onRefresh={() => refetch()}
       />
+    )
+  }, [data, loading])
+
+  return (
+    <Container>
+      {token ? (
+        <AppBar
+          onLogoPress={() => navigation.openDrawer()}
+          onNotiPress={() => navigation.navigate('Notification')}
+        />
+      ) : (
+        <AppBar onLogoPress={() => navigation.openDrawer()} />
+      )}
+      {FlatListMemo}
     </Container>
   )
 }
@@ -116,4 +121,4 @@ const Separator = styled.View`
   height: 5px;
 `
 
-export default FeedScreen
+export default memo(FeedScreen)

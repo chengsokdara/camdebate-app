@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useState, useEffect } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components/native'
 import { BackHandler } from 'react-native'
 import { Button, Snackbar } from 'react-native-paper'
@@ -55,61 +55,78 @@ const Drawer = props => {
   return (
     <SafeArea forceInset={{ top: 'always', horizontal: 'never' }}>
       <Container onPress={() => navigation.closeDrawer()} activeOpacity={1}>
-        {token ? (
-          <Header>
-            <Avatar
-              source={require('../../resources/images/camdebate_white_logo.png')}
-            />
-            {profile ? (
-              <UserInfoContainer>
-                <TextName>{`${profile.Title} ${profile.GivenName}`}</TextName>
-                <Text>{profile.Phone}</Text>
-                <Text>{profile.WorkPlace}</Text>
-              </UserInfoContainer>
-            ) : null}
-          </Header>
-        ) : (
-          <Header>
-            <Logo
-              source={require('../../resources/images/camdebate_logo.png')}
-            />
-            <AppInfoContainer>
-              <TextName>CamDEBATE</TextName>
-              <Button
-                icon="shield-account-outline"
-                mode="contained"
-                style={{ alignSelf: 'baseline' }}
-                onPress={() => navigation.navigate('Signin')}>
-                Login
-              </Button>
-            </AppInfoContainer>
-          </Header>
+        {useMemo(
+          () =>
+            token ? (
+              <Header>
+                <Avatar
+                  source={require('../../resources/images/camdebate_white_logo.png')}
+                />
+                {useMemo(
+                  () =>
+                    profile ? (
+                      <UserInfoContainer>
+                        <TextName>{`${profile.Title} ${profile.GivenName}`}</TextName>
+                        <Text>{profile.Phone}</Text>
+                        <Text>{profile.WorkPlace}</Text>
+                      </UserInfoContainer>
+                    ) : null,
+                  [profile]
+                )}
+              </Header>
+            ) : (
+              <Header>
+                <Logo
+                  source={require('../../resources/images/camdebate_logo.png')}
+                />
+                <AppInfoContainer>
+                  <TextName>CamDEBATE</TextName>
+                  <Button
+                    icon="shield-account-outline"
+                    mode="contained"
+                    style={{ alignSelf: 'baseline' }}
+                    onPress={() => navigation.navigate('Signin')}>
+                    Login
+                  </Button>
+                </AppInfoContainer>
+              </Header>
+            ),
+          [profile, token]
         )}
         <Content contentContainerStyle={{ flexGrow: 1 }}>
-          <DrawerItems
-            {...props}
-            onItemPress={({ route, focused }) => {
-              if (route.routeName === 'Logout') handleLogoutPress()
-              else if (route.routeName === 'Exit') BackHandler.exitApp()
-              else props.onItemPress({ route, focused })
-            }}
-          />
+          {useMemo(
+            () => (
+              <DrawerItems
+                {...props}
+                onItemPress={({ route, focused }) => {
+                  if (route.routeName === 'Logout') handleLogoutPress()
+                  else if (route.routeName === 'Exit') BackHandler.exitApp()
+                  else props.onItemPress({ route, focused })
+                }}
+              />
+            ),
+            [props]
+          )}
           <Divider />
-          {menuItems.length > 0
-            ? menuItems.map(item =>
-                item.Visible && !item.Deleted && (!item.Screen || token) ? (
-                  <DrawerItem
-                    key={item.MenuID}
-                    title={item.Title}
-                    onPress={() =>
-                      item.Screen
-                        ? navigation.navigate(item.Screen)
-                        : navigation.navigate('Browser', { uri: item.Url })
-                    }
-                  />
-                ) : null
-              )
-            : null}
+          {useMemo(
+            () =>
+              menuItems.length > 0
+                ? menuItems.map(item =>
+                    item.Visible && !item.Deleted && (!item.Screen || token) ? (
+                      <DrawerItem
+                        key={item.MenuID}
+                        title={item.Title}
+                        onPress={() =>
+                          item.Screen
+                            ? navigation.navigate(item.Screen)
+                            : navigation.navigate('Browser', { uri: item.Url })
+                        }
+                      />
+                    ) : null
+                  )
+                : null,
+            [menuItems, token]
+          )}
         </Content>
         <Footer>
           <Text bold color={primaryColor}>
@@ -119,16 +136,21 @@ const Drawer = props => {
           <Text>All right reserved.</Text>
         </Footer>
       </Container>
-      <Snackbar
-        duration={5000}
-        visible={toggleSnackbar}
-        onDismiss={() => setToggleSnackbar('')}
-        action={{
-          label: 'Done',
-          onPress: () => setToggleSnackbar('')
-        }}>
-        {toggleSnackbar || 'Unknown Errors!'}
-      </Snackbar>
+      {useMemo(
+        () => (
+          <Snackbar
+            duration={5000}
+            visible={toggleSnackbar}
+            onDismiss={() => setToggleSnackbar('')}
+            action={{
+              label: 'Done',
+              onPress: () => setToggleSnackbar('')
+            }}>
+            {toggleSnackbar || 'Unknown Errors!'}
+          </Snackbar>
+        ),
+        [toggleSnackbar]
+      )}
     </SafeArea>
   )
 }
@@ -207,4 +229,4 @@ const UserInfoContainer = styled.View`
   justify-content: center;
 `
 
-export default Drawer
+export default memo(Drawer)

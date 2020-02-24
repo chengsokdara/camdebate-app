@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import styled from 'styled-components/native'
 //import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Linking } from 'react-native'
@@ -99,4 +99,4 @@ const Link = styled.Text`
   padding-left: 5px;
 `
 
-export default ApplicationScreen
+export default memo(ApplicationScreen)

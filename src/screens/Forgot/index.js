@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import styled from 'styled-components/native'
 import {
   Button,
@@ -149,4 +149,4 @@ const Content = styled.View`
   padding: 10px;
 `
 
-export default ForgotPasswordScreen
+export default memo(ForgotPasswordScreen)

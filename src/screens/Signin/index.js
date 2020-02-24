@@ -9,7 +9,7 @@
  *
  * Created At: 03/02/2020
  */
-import React, { useRef, useState } from 'react'
+import React, { memo, useRef, useState } from 'react'
 import AsyncStorage from '@react-native-community/async-storage'
 import styled from 'styled-components/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -239,4 +239,4 @@ const TextInputMargined = styled(TextInput)`
   margin-bottom: 10px;
 `
 
-export default SigninScreen
+export default memo(SigninScreen)
