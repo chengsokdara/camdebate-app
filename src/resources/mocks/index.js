@@ -10,7 +10,7 @@
  * Created At: 03/02/2020
  */
 export { default as MockFaq } from './faq'
-export { default as MockNews } from './news'
+export { default as MockFeed } from './feed'
 export { default as MockNotification } from './notification'
 export { default as MockRegistration } from './registration'
 

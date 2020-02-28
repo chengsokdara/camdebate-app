@@ -17,6 +17,7 @@ import { createStackNavigator } from 'react-navigation-stack'
 
 import { Drawer, NavIcon } from '../components'
 import { lightPrimaryColor, primaryColor } from '../resources'
+import AboutScreen from './About'
 import ApplicationScreen from './Application'
 import ContactScreen from './Contact'
 import FaqScreen from './Faq'
@@ -181,6 +182,18 @@ const DrawerNavigator = createDrawerNavigator(
         )
       }
     },
+    About: {
+      screen: AboutScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="information-outline"
+          />
+        )
+      }
+    },
     Notification: {
       screen: NotificationNavigator,
       navigationOptions: { drawerLabel: () => null }
@@ -308,6 +321,18 @@ const AuthDrawerNavigator = createDrawerNavigator(
             color={tintColor}
             focused={focused}
             name="file-table-outline"
+          />
+        )
+      }
+    },
+    About: {
+      screen: AboutScreen,
+      navigationOptions: {
+        drawerIcon: ({ focused, tintColor }) => (
+          <NavIcon
+            color={tintColor}
+            focused={focused}
+            name="information-outline"
           />
         )
       }

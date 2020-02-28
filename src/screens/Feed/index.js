@@ -17,6 +17,7 @@ import { FlatList } from 'react-native'
 import { useSelector, shallowEqual } from 'react-redux'
 
 import { primaryColor } from '../../resources'
+import { MockFeed } from '../../resources/mocks'
 import { FeedsQuery } from '../../resources/queries'
 import { AppBar } from '../../components'
 import FeedItem from './item'
@@ -37,7 +38,8 @@ const FeedScreen = ({ navigation }) => {
     const sortedData =
       data?.feeds?.feeds
         .sort((a, b) => b.FeedID - a.FeedID)
-        .sort((a, b) => b.Announcement - a.Announcement) ?? []
+        .sort((a, b) => b.Announcement - a.Announcement) ?? MockFeed
+    console.log('sortedData', sortedData)
     return (
       <FlatList
         refreshing={loading}

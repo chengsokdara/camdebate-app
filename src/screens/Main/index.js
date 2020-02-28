@@ -38,7 +38,7 @@ const MainScreen = ({ navigation }) => {
           const { code, profile: contact } = res.data.profile
           if (code === 200) profile = contact
         }
-        if (token) await dispatch(loginAsync(token, profile))
+        if (token && profile) await dispatch(loginAsync(token, profile))
         navigation.navigate(token ? 'App' : 'Auth')
       } catch (e) {
         console.log('initAsync error', e)
